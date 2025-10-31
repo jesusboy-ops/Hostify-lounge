@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hostify | Staff Login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'Roboto', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(to right, #f5f5f5, #e5e7eb);
+      color: #1f2937;
+    }
+
+    .login-container {
+      display: flex;
+      max-width: 1000px;
+      width: 95%;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    /* === LEFT DISCLAIMER === */
+    .login-left {
+      flex: 1;
+      background: linear-gradient(to bottom right, #4b352a, #1f1f1f);
+      color: white;
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .login-left h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .login-left p {
+      color: #e5e7eb;
+      line-height: 1.5;
+      font-size: 0.95rem;
+    }
+
+    .warning-box {
+      background: rgba(255, 255, 255, 0.1);
+      border-left: 4px solid #facc15;
+      padding: 15px 20px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #fff5b1;
+    }
+
+    /* === RIGHT FORM === */
+    .login-right {
+      flex: 1;
+      padding: 60px 50px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #fff;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .login-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #4b352a;
+      margin-bottom: 5px;
+    }
+
+    .login-header p {
+      color: #6b7280;
+      font-size: 0.95rem;
+    }
+
+    form {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #374151;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #4b352a;
+      background: #f9fafb;
+    }
+
+    .login-form_button {
+      width: 100%;
+      padding: 12px;
+      background: #4b352a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s;
+    }
+
+    .login-form_button:hover {
+      background: #5c3f32;
+      transform: translateY(-2px);
+    }
+
+    .footer-link {
+      margin-top: 15px;
+      display: inline-block;
+      font-size: 0.9rem;
+      color: #4b352a;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer-link:hover {
+      color: #b45309;
+      text-decoration: underline;
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 850px) {
+      .login-container {
+        flex-direction: column;
+      }
+
+      .login-left {
+        padding: 40px 30px;
+        text-align: center;
+      }
+
+      .warning-box {
+        margin: 0 auto;
+      }
+
+      .login-right {
+        padding: 40px 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <!-- LEFT SIDE -->
+    <div class="login-left">
+      <h2>⚠️ Staff Only</h2>
+      <p>
+        This section is strictly for <strong>Hostify employees</strong>.  
+        Unauthorized access attempts are monitored and may result in action.
+      </p>
+      <div class="warning-box">
+        🚫 Non-staff attempting to log in may face serious repercussions, including access restrictions.
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="login-right">
+      <div class="login-header">
+        <h1>Staff Login</h1>
+        <p>Enter your password to access the Hostify Dashboard</p>
+      </div>
+
+      <form>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter staff password" required />
+        </div>
+        <button class="login-form_button">Login</button>
+      </form>
+
+      <a href="index.html" class="footer-link">← Back to Home</a>
+    </div>
+  </div>
+
+  <script src="staff.js"></script>
+</body>
+</html>

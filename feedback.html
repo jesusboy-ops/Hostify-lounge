@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostify - Feedback</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Roboto', sans-serif;
+      background-color: #1f2732;
+      color: #111827;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 60px;
+      background: #1F2937;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .nav-left .logo-text a {
+      font-size: 28px;
+      font-weight: 700;
+      color: #E9D368;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .nav-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .menu {
+      display: flex;
+      list-style: none;
+      gap: 35px;
+    }
+
+    .menu a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .menu a:hover {
+      color: #E9D368;
+    }
+
+    .nav-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .mode-toggle,
+    .mobile-toggle {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+
+    .mode-toggle:hover,
+    .mobile-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .mobile-toggle {
+      display: none;
+    }
+
+    /* Main Content */
+    .feedback {
+      min-height: calc(100vh - 70px);
+      padding: 60px 20px;
+    }
+
+    .feedback__section {
+      max-width: 700px;
+      margin: 0 auto 60px;
+      text-align: center;
+    }
+
+    .feedback__title {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #f8f9fa;
+    }
+
+    .feedback__subtitle {
+      font-size: 18px;
+      color: #fbfbfb;
+      margin-bottom: 40px;
+    }
+
+    /* Feedback Form */
+    .feedback__form {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: left;
+    }
+
+    .feedback__label {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      text-align: center;
+      color: #1A1E37;
+    }
+
+    .feedback__rating {
+      margin-bottom: 30px;
+    }
+
+    .feedback__rating label {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #374151;
+    }
+
+    .feedback__stars {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      font-size: 50px;
+    }
+
+    .feedback__stars span {
+      color: #d1d5db;
+      cursor: pointer;
+      transition: all 0.3s;
+      user-select: none;
+    }
+
+    .feedback__stars span:hover,
+    .feedback__stars span.active {
+      color: #e0ce0d;
+      transform: scale(1.1);
+    }
+
+    .feedback__comments {
+      margin-bottom: 30px;
+    }
+
+    .feedback__comments label {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #374151;
+    }
+
+    .feedback__comments textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      resize: vertical;
+      transition: border-color 0.3s;
+    }
+
+    .feedback__comments textarea:focus {
+      outline: none;
+      border-color: #E9D368;
+    }
+
+    .feedback__btn  { 
+      width: 100%;
+      padding: 16px;
+      background: #2B3148;
+      color: #f7f7f8;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .feedback__btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(233, 211, 104, 0.4);
+    }
+
+    /* Recent Feedback Section */
+    .feedback__recent {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .feedback__recent-title {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 40px;
+      color: #fbfbfd;
+    }
+    body.light-mode .feedback__recent-title{
+      color: rgb(7, 7, 7);
+    }
+
+    .feedback__list {
+      display: grid;
+      gap: 20px;
+    }
+
+    .feedback-item {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s;
+    }
+
+    .feedback-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .feedback-item__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .feedback-item__stars {
+      color: #E9D368;
+      font-size: 20px;
+    }
+
+    .feedback-item__date {
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
+    .feedback-item__comment {
+      color: #4b5563;
+      line-height: 1.6;
+    }
+
+    .feedback__list p {
+      text-align: center;
+      color: #9ca3af;
+      padding: 40px;
+      background: white;
+      border-radius: 16px;
+    }
+
+    /* Light Mode */
+    body.light-mode {
+      background-color: #ffffff;
+    }
+    body.light-mode .feedback__title{
+      color: #4B352A;
+    }
+    body.light-mode .feedback__subtitle{
+      color: #3d2d25;
+    }
+
+    body.light-mode nav {
+      background:#4B352A ;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    body.light-mode .nav-center {
+      background:#4B352A ;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+    body.light-mode .feedback__btn {
+      background:#4B352A ;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav {
+        padding: 15px 20px;
+      }
+
+      .nav-center {
+        position: absolute;
+        top: 70px;
+
+        border-radius: 10px;
+        right: 15px;
+        background: #222b35;
+        padding: 0;
+        display: none;
+      }
+
+      .nav-center.active {
+        display: block;
+      }
+
+      .menu {
+        flex-direction: column;
+        gap: 0;
+        padding: 15px;
+      }
+
+      .menu a {
+        padding: 15px 20px;
+        display: block;
+        border-radius: 8px;
+      }
+
+      .menu a:hover {
+        background: rgba(233, 211, 104, 0.2);
+      }
+
+      .mobile-toggle {
+        display: block;
+      }
+
+      .feedback__title {
+        font-size: 36px;
+      }
+
+      .feedback__form {
+        padding: 30px 20px;
+      }
+
+      .feedback__stars {
+        font-size: 40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .feedback__title {
+        font-size: 28px;
+      }
+
+      .feedback__subtitle {
+        font-size: 16px;
+      }
+
+      .feedback__stars {
+        font-size: 35px;
+        gap: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="nav-left">
+      <img src="/images (25)/images/hcre-4-11.png" alt="Hostify Logo">
+    </div>
+
+    <div class="nav-center" id="navCenter">
+      <div class="menu">
+        <a href="index.html">Home</a>
+        <a href="booking.html">Book</a>
+        <a href="menu.html">Menu</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="staff.html">Staff</a>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button class="mode-toggle" id="modeToggle">🌙</button>
+      <button class="mobile-toggle" id="mobileToggle">☰</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="feedback">
+    <section class="feedback__section">
+      <h1 class="feedback__title">Share Your Feedback</h1>
+      <p class="feedback__subtitle">Help us improve your experience at Hostify</p>
+
+      <div class="feedback__form">
+        <h3 class="feedback__label">Rate Your Experience</h3>
+
+        <div class="feedback__rating">
+          <label>Your Rating</label>
+          <div class="feedback__stars" id="starContainer">
+            <span data-value="1">★</span>
+            <span data-value="2">★</span>
+            <span data-value="3">★</span>
+            <span data-value="4">★</span>
+            <span data-value="5">★</span>
+          </div>
+        </div>
+
+        <div class="feedback__comments">
+          <label>Your Comments (Optional)</label>
+          <textarea 
+            id="commentInput" 
+            placeholder="Tell us about your experience at Hostify..."
+          ></textarea>
+        </div>
+
+        <button id="submitBtn" class="feedback__btn">Submit Feedback</button>
+      </div>
+    </section>
+
+    <section class="feedback__recent">
+      <h2 class="feedback__recent-title">Recent Feedback</h2>
+      <div id="feedbackList" class="feedback__list">
+        <p>No feedback yet. Be the first to share!</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Light/Dark Mode Toggle
+    const modeToggle = document.getElementById("modeToggle");
+    const body = document.body;
+
+    // Load saved theme
+    if (localStorage.getItem("theme") === "light") {
+      body.classList.add("light-mode");
+      modeToggle.textContent = "🔆";
+    }
+
+    modeToggle.addEventListener("click", () => {
+      body.classList.toggle("light-mode");
+      const isLight = body.classList.contains("light-mode");
+      modeToggle.textContent = isLight ? "🔆" : "🌙";
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+    });
+
+    // Mobile Menu Toggle
+    const mobileToggle = document.getElementById("mobileToggle");
+    const navCenter = document.getElementById("navCenter");
+
+    mobileToggle.addEventListener("click", () => {
+      navCenter.classList.toggle("active");
+      mobileToggle.textContent = navCenter.classList.contains("active") ? "✕" : "☰";
+    });
+
+    // Star Rating System
+    const stars = document.querySelectorAll("#starContainer span");
+    let selectedRating = 0;
+
+    stars.forEach((star) => {
+      // Click to select rating
+      star.addEventListener("click", () => {
+        selectedRating = parseInt(star.dataset.value);
+        updateStars(selectedRating);
+      });
+
+      // Hover effect
+      star.addEventListener("mouseover", () => {
+        const value = parseInt(star.dataset.value);
+        updateStars(value);
+      });
+
+      // Reset to selected on mouse out
+      star.addEventListener("mouseout", () => {
+        updateStars(selectedRating);
+      });
+    });
+
+    function updateStars(rating) {
+      stars.forEach((star, index) => {
+        star.classList.toggle("active", index < rating);
+      });
+    }
+
+    // Submit Feedback
+    const submitBtn = document.getElementById("submitBtn");
+    const commentInput = document.getElementById("commentInput");
+    const feedbackList = document.getElementById("feedbackList");
+
+    submitBtn.addEventListener("click", () => {
+      if (selectedRating === 0) {
+        alert("Please select a rating!");
+        return;
+      }
+
+      const comment = commentInput.value.trim();
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+
+      // Create feedback item
+      const feedbackItem = document.createElement("div");
+      feedbackItem.className = "feedback-item";
+      feedbackItem.innerHTML = `
+        <div class="feedback-item__header">
+          <div class="feedback-item__stars">${'★'.repeat(selectedRating)}${'☆'.repeat(5 - selectedRating)}</div>
+          <div class="feedback-item__date">${dateStr}</div>
+        </div>
+        <div class="feedback-item__comment">
+          ${comment || "No additional comments provided."}
+        </div>
+      `;
+
+      // Add to list
+      if (feedbackList.querySelector("p")) {
+        feedbackList.innerHTML = "";
+      }
+      feedbackList.insertBefore(feedbackItem, feedbackList.firstChild);
+
+      // Reset form
+      selectedRating = 0;
+      updateStars(0);
+      commentInput.value = "";
+
+      // Success message
+      alert("Thank you for your feedback! 🎉");
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostify Menu</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: 'Inter','Roboto',sans-serif; background-color:#FFFDF1; color:#000; transition: background 0.4s, color 0.4s; min-height:100vh; }
+    body.dark { background-color:#2b2b2b; color:#f3f4f6; }
+
+    /* Navbar */
+    .navbar { display:flex; justify-content:space-between; align-items:center; padding:10px 40px; background:#4B352A; color:white; position:sticky; top:0; z-index:999; }
+    .logo img { height:50px; width:auto; }
+    .nav-links { display:flex; list-style:none; gap:35px; font-size:16px; font-weight:500; }
+    
+    .nav-links a { color:white; text-decoration:none; transition:color 0.3s; padding:5px 0; }
+    .nav-links a:hover { color:#E9D368; }
+    .menu-toggle { display:none; background:none; border:none; color:white; font-size:28px; cursor:pointer; }
+    .theme-toggle { background:none; border:none; font-size:24px; color:#E9D368; cursor:pointer; margin-left:15px; }
+     body.dark .navbar{
+      background-color: #1A1E37;
+       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+     }
+     body.dark {
+      background-color: #1A1E37;
+     }
+     body.dark footer{
+      background-color: #1A1E37;
+       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+       
+     }
+     .nav-icons{
+      display: flex;
+      gap: 10px;
+     }
+    /* Cart Icon */
+    .cart-container { position:fixed; top:90px; right:30px; z-index:1000; }
+    .cart-icon { background:#E9D368; width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; box-shadow:0 4px 15px rgba(0,0,0,0.2); position:relative; transition:transform 0.3s; }
+    .cart-icon:hover { transform:scale(1.1); }
+    .cart-count { position:absolute; top:-5px; right:-5px; background:#4B352A; color:white; width:25px; height:25px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
+
+    /* Main Container */
+    .desktop-3-1 { min-height:100vh; padding:40px 20px; }
+
+    /* Header Section */
+    .menu-header { text-align:center; margin-bottom:40px; }
+    .menu-title { font-size:48px; font-weight:700; margin-bottom:10px; color:#1A1E37; }
+    body.dark .menu-title { color:#f3f4f6; }
+    .menu-subtitle { font-size:20px; color:#c5c5c5; margin-bottom:30px; }
+    body.dark .menu-subtitle { color:#d1d5db; }
+
+    /* Category Tabs */
+    .category-tabs { display:flex; justify-content:center; gap:20px; flex-wrap:wrap; margin-bottom:40px; }
+    .category-tab { padding:12px 30px; background:#4B352A; color:white; border-radius:15px; font-weight:600; font-size:16px; cursor:pointer; border:none; transition:all 0.3s; }
+    .category-tab:hover { background:#d4af37; transform:translateY(-2px); }
+     body.dark .category-tab {
+      background-color: #2B3148;
+     }
+    /* Menu Grid */
+    .menu-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:30px; max-width:1400px; margin:0 auto; }
+
+    /* Menu Item Card */
+    .menu-item { background:white; border-radius:16px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08); transition:transform 0.3s, box-shadow 0.3s; display:flex; flex-direction:column; }
+    body.dark .menu-item { background:#3a3a3a; color:#f3f4f6; }
+    .menu-item:hover { transform:translateY(-5px); box-shadow:0 8px 20px rgba(0,0,0,0.12); }
+    .menu-item img { width:100%; height:220px; object-fit:cover; }
+    .item-content { padding:20px; display:flex; flex-direction:column; gap:10px; flex:1; }
+    .item-title { font-size:20px; font-weight:700; }
+    .item-description { font-size:14px; color:#666; }
+    body.dark .item-description { color:#d1d5db; }
+    .item-price { display:flex; align-items:center; gap:5px; font-size:18px; font-weight:700; margin:10px 0; }
+    body.dark .add-to-cart-btn{
+      background-color: #2B3148;
+    }
+    .add-to-cart-btn { background:#4B352A; padding:12px 20px; color:white; border-radius:8px; text-align:center; cursor:pointer; font-weight:600; border:none; width:100%; transition:all 0.3s; margin-top:auto; }
+    .add-to-cart-btn:hover { transform:scale(1.05); box-shadow:0 4px 15px rgba(233,211,104,0.4); }
+
+    /* Checkout Modal */
+    .checkout-modal { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.7); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
+    .checkout-modal.active { display:flex; }
+    .checkout-content { background:white; border-radius:20px; max-width:600px; width:100%; max-height:90vh; overflow-y:auto; padding:30px; }
+    body.dark .checkout-content { background:#3a3a3a; color:#f3f4f6; }
+    .checkout-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; border-bottom:2px solid #f0f0f0; padding-bottom:15px; }
+    .checkout-title { font-size:28px; font-weight:700; }
+    .close-btn { background:none; border:none; font-size:30px; cursor:pointer; color:#4B352A; }
+    body.dark .close-btn { color:#E9D368; }
+    .cart-items { margin-bottom:20px; }
+    .cart-item { display:flex; gap:15px; padding:15px; border-bottom:1px solid #f0f0f0; align-items:center; }
+    body.dark .cart-item { border-color:#555; }
+    .cart-item-info { flex:1; }
+    .cart-item-title { font-weight:700; margin-bottom:5px; }
+    .cart-item-price { color:#666; font-size:14px; }
+    body.dark .cart-item-price { color:#d1d5db; }
+    .quantity-controls { display:flex; align-items:center; gap:10px; }
+    .qty-btn { background:#E9D368; border:none; width:30px; height:30px; border-radius:5px; cursor:pointer; font-weight:700; font-size:16px; }
+    .qty-btn:hover { background:#d4af37; }
+    .qty-display { font-weight:700; min-width:30px; text-align:center; }
+    .remove-btn { background:#dc2626; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; font-size:12px; }
+    .remove-btn:hover { background:#b91c1c; }
+    .checkout-total { margin-top:20px; padding-top:20px; border-top:2px solid #f0f0f0; }
+    .total-row { display:flex; justify-content:space-between; font-size:24px; font-weight:700; margin-bottom:20px; }
+    .checkout-btn { width:100%; background:#4B352A; color:#fcf9f9; border:none; padding:15px; border-radius:10px; font-size:18px; font-weight:700; cursor:pointer; transition:all 0.3s; }
+    .checkout-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(233,211,104,0.4); }
+    .empty-cart { text-align:center; padding:40px; color:#666; }
+    body.dark .empty-cart { color:#d1d5db; }
+    body.dark .nav-links.active {
+      background-color:#2B3148;
+    }
+
+    /* Footer */
+    footer { background:#4B352A; color:white; text-align:center; padding:20px; margin-top:40px; }
+    footer p { font-size:14px; }
+
+    /* Responsive */
+   @media(max-width:768px) {
+      .navbar { padding:15px 20px; }
+      .nav-links { display:none; flex-direction:column; position:absolute; top:80px; right:20px; background-color:#4B352A; padding:20px; border-radius:10px; gap:15px; box-shadow:0 10px 30px rgba(0,0,0,0.3); z-index:1000;}
+      .nav-links a { padding:10px 15px; display:block; border-radius:5px; }
+      .nav-links a:hover { background:rgba(233,211,104,0.2); }
+      .nav-links.active { display:flex; }
+      .menu-toggle { display:block; }
+      .menu-grid { grid-template-columns:1fr; }
+      .cart-icon { width:50px; height:50px; font-size:24px; }
+      .checkout-content { padding:20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="/images/hcre-4-11.png" alt="Hostify Logo">
+    </div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="booking.html">Book</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="staff.html">Staff</a></li>
+    </ul>
+    <div class="nav-icons">
+      <button class="theme-toggle" id="themeToggle">🌙</button>
+      <button class="menu-toggle" id="menuToggle">☰</button>
+    </div>
+  </nav>
+
+  <!-- Cart Icon -->
+  <div class="cart-container">
+    <div class="cart-icon" id="cartIcon">
+      🛒
+      <span class="cart-count" id="cartCount">0</span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="desktop-3-1">
+    <div class="menu-header">
+      <h1 class="menu-title">MENU</h1>
+      <p class="menu-subtitle">Delicious food and refreshing drinks</p>
+    </div>
+
+    <div class="category-tabs">
+      <button class="category-tab" onclick="filterMenu('all')">All</button>
+      <button class="category-tab" onclick="filterMenu('food')">Food</button>
+      <button class="category-tab" onclick="filterMenu('drinks')">Drinks</button>
+    </div>
+
+    <div class="menu-grid" id="menuGrid">
+      <!-- Menu items will be generated by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Checkout Modal -->
+  <div class="checkout-modal" id="checkoutModal">
+    <div class="checkout-content">
+      <div class="checkout-header">
+        <h2 class="checkout-title">Your Cart</h2>
+        <button class="close-btn" onclick="closeCheckout()">&times;</button>
+      </div>
+      <div class="cart-items" id="cartItems">
+        <!-- Cart items will be displayed here -->
+      </div>
+      <div class="checkout-total">
+        <div class="total-row">
+          <span>Total:</span>
+          <span id="totalPrice">₦0</span>
+        </div>
+        <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2025 Hostify Lounge. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+    });
+
+    // Dark Mode toggle
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      themeToggle.textContent = document.body.classList.contains('dark') ? '🔆' : '🌙';
+    });
+
+    // Menu Items Data
+    const menuItems = [
+      { id: 1, name: 'Zobo Drink', description: 'With lemon and mint', price: 5000, category: 'drinks', image: '/images/bb37bfa2-9c82-4ade-b4e2-72e9bf50be9b.jpeg' },
+      { id: 2, name: 'Jollof Rice', description: 'With chicken or fish', price: 5000, category: 'food', image: '/images/b0ea2267-f951-4a8c-a9bf-0d2b6e652ce9.jpeg' },
+      { id: 3, name: 'Spaghetti', description: 'With chicken chunks', price: 5000, category: 'food', image: '/images/spag.jpeg' },
+      { id: 4, name: 'Rice and Stew', description: 'With plantain and veggies', price: 5000, category: 'food', image: '/images/97e576ee-702f-4c9f-8aa7-3c1894b3c0bd.jpeg' },
+      { id: 5, name: 'Fried Rice', description: 'With chicken or beef', price: 5000, category: 'food', image: '/images/a6b97136-9822-492e-bc6e-af0f2f961912.jpeg' },
+      { id: 6, name: 'Banana Smoothie', description: 'Strawberry available', price: 5000, category: 'drinks', image: '/images/The best 3-ingredient smoothie_ Make this easy….jpeg' },
+      { id: 7, name: 'Mint Tea', description: 'Natural herbs', price: 5000, category: 'drinks', image: '/images/Mint tea is flavorful and fragrant herbal tea….jpeg' },
+      { id: 8, name: 'Yam and Sauce', description: 'Sauce can be changed', price: 5000, category: 'food', image: '/images/539aa2a4-1325-47a3-8498-e47f9433a4c5.jpeg' }
+    ];
+
+    let cart = [];
+    let currentFilter = 'all';
+
+    function displayMenu(filter = 'all') {
+      const menuGrid = document.getElementById('menuGrid');
+      const filtered = filter === 'all' ? menuItems : menuItems.filter(item => item.category === filter);
+      menuGrid.innerHTML = filtered.map(item => `
+        <div class="menu-item">
+          <img src="${item.image}" alt="${item.name}">
+          <div class="item-content">
+            <h3 class="item-title">${item.name}</h3>
+            <p class="item-description">${item.description}</p>
+            <div class="item-price">₦${item.price.toLocaleString()}</div>
+            <button class="add-to-cart-btn" onclick="addToCart(${item.id})">Place Order Now</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterMenu(category) {
+      currentFilter = category;
+      displayMenu(category);
+    }
+
+    function addToCart(itemId) {
+      const item = menuItems.find(i => i.id === itemId);
+      const existingItem = cart.find(i => i.id === itemId);
+      if (existingItem) { existingItem.quantity++; } else { cart.push({ ...item, quantity: 1 }); }
+      updateCartCount();
+      animateCartIcon();
+    }
+
+    function updateCartCount() {
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      document.getElementById('cartCount').textContent = totalItems;
+    }
+
+    function animateCartIcon() {
+      const icon = document.getElementById('cartIcon');
+      icon.style.transform = 'scale(1.2)';
+      setTimeout(() => icon.style.transform = 'scale(1)', 300);
+    }
+
+    document.getElementById('cartIcon').addEventListener('click', () => {
+      if (cart.length === 0) { alert('Your cart is empty!'); return; }
+      displayCart();
+      document.getElementById('checkoutModal').classList.add('active');
+    });
+
+    function closeCheckout() { document.getElementById('checkoutModal').classList.remove('active'); }
+
+    function displayCart() {
+      const cartItems = document.getElementById('cartItems');
+      if (cart.length === 0) { cartItems.innerHTML = '<div class="empty-cart">Your cart is empty</div>'; return; }
+      cartItems.innerHTML = cart.map(item => `
+        <div class="cart-item">
+          <div class="cart-item-info">
+            <div class="cart-item-title">${item.name}</div>
+            <div class="cart-item-price">₦${item.price.toLocaleString()}</div>
+          </div>
+          <div class="quantity-controls">
+            <button class="qty-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+            <span class="qty-display">${item.quantity}</span>
+            <button class="qty-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+          </div>
+          <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+        </div>
+      `).join('');
+      updateTotal();
+    }
+
+    function updateQuantity(itemId, change) {
+      const item = cart.find(i => i.id === itemId);
+      if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) { removeFromCart(itemId); } 
+        else { displayCart(); updateCartCount(); }
+      }
+    }
+
+    function removeFromCart(itemId) {
+      cart = cart.filter(i => i.id !== itemId);
+      displayCart();
+      updateCartCount();
+      if(cart.length===0) closeCheckout();
+    }
+
+    function updateTotal() {
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      document.getElementById('totalPrice').textContent = `₦${total.toLocaleString()}`;
+    }
+
+    function proceedToCheckout() {
+      alert('Proceeding to payment... Total: ₦' + cart.reduce((sum,item)=>sum+(item.price*item.quantity),0).toLocaleString());
+      cart=[]; updateCartCount(); closeCheckout(); displayMenu(currentFilter);
+    }
+
+    // Initialize
+    displayMenu();
+  </script>
+</body>
+</html>

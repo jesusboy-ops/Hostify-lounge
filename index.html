@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hostify Lounge</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Inter|Poppins&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="/images/hcre-4-11.png" alt="Hostify Logo" />
+    </div>
+
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="booking.html">Book</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="staff.html">Staff</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <button id="themeToggle" class="theme-toggle">🌙</button>
+      <button class="menu-toggle">☰</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>EXPERIENCE YOUR PERFECT LOUNGE WITH HOSTIFY</h1>
+    <p>Relax, unwind and enjoy premium services in our luxurious lounge</p>
+    <div class="contain">
+         <button onclick="window.location.href='booking.html'" class="book-btn">Book Now</button>
+    <button onclick="window.location.href='menu.html'" class="book-btn">Order Now</button>
+    <button onclick="window.location.href='feedback.html'" class="book-btn">Feedback</button>
+    </div>
+  </section>
+
+  <!-- Image Section -->
+  <section class="image-section">
+    <div class="image-card">
+      <img src="/images/image_fx-12-1-17.png" alt="Service 1" />
+      <p>Experience comfort in beautifully designed spaces</p>
+    </div>
+    <div class="image-card">
+      <img src="/images/image_fx-13-1-20.png" alt="Service 2" />
+      <p>Enjoy 5-star hospitality that puts you first</p>
+    </div>
+    <div class="image-card">
+      <img src="/images/image_fx-14-1-23.png" alt="Service 3" />
+      <p>Savour delicious meals and perfectly made drinks</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-left">
+        <img src="/images/hcre-4-11.png" alt="Hostify Logo" />
+        <p>Hostify Lounge</p>
+      </div>
+
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="booking.html">Book</a>
+        <a href="menu.html">Menu</a>
+        <a href="feedback.html">Feedback</a>
+        <a href="staff.html">Staff</a>
+      </div>
+
+      <div class="footer-contact">
+        <p>📞 +234 123 456 7890</p>
+        <p>✉️ contact@hostify.com</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 Hostify Lounge. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // === MOBILE MENU TOGGLE ===
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+    });
+
+    // === DARK / LIGHT MODE TOGGLE ===
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // Load saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      body.classList.add('dark-mode');
+      themeToggle.textContent = '🔆';
+    }
+
+    // Toggle theme
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      const isDark = body.classList.contains('dark-mode');
+      themeToggle.textContent = isDark ? '🌙' : '🔆';
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    });
+  </script>
+
+</body>
+</html>

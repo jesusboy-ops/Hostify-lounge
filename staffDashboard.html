@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hostify | Staff Dashboard</title>
+  <link rel="stylesheet" href="staffDashboard.css" />
+</head>
+<style>
+    /* === GLOBAL COLORS & BASE === */
+:root {
+  --color-dark-bg: #111827;
+  --color-dark-card: #1f2937;
+  --color-accent: #f59e0b;
+  --color-accent-dark: #d97706;
+  --color-light-bg: #fffdf5;
+  --color-light-text: #101828;
+  --color-gray: #9ca3af;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background: var(--color-dark-bg);
+  color: white;
+  line-height: 1.6;
+  transition: background 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+}
+
+/* === HEADER === */
+.dashboard-header {
+  background-color: var(--color-dark-card);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-header_brand a {
+  font-size: 1.6rem;
+  font-weight: 700;
+  background-image: linear-gradient(to right, #f59e0b, #ca8a04);
+  background-clip: text;
+  color: transparent;
+  text-decoration: none;
+}
+
+.dashboard-header_actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.theme-btn {
+  background: none;
+  border: none;
+  color: #fbbf24;
+  font-size: 1.6rem;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.theme-btn:hover {
+  transform: rotate(20deg);
+}
+
+.mobile-toggle {
+  display: none;
+  font-size: 1.8rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.dashboard-header_logout-button a {
+  text-decoration: none;
+  color: #fff;
+  background: var(--color-accent);
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.dashboard-header_logout-button a:hover {
+  background: var(--color-accent-dark);
+  transform: translateY(-2px);
+}
+
+/* === CONTAINER === */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  margin-bottom: 1.5rem;
+}
+
+/* === TABS === */
+.tabs-list {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  background: transparent;
+  border: none;
+  padding: 0.75rem 1rem;
+  color: #d1d5db;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.3s, border-bottom-color 0.3s;
+  border-bottom: 2px solid transparent;
+}
+
+.tab-button:hover {
+  color: var(--color-accent);
+}
+
+.tab-button--active {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* === CONTENT AREA === */
+.dashboard-content-area {
+  background-color: var(--color-dark-card);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 2rem;
+  transition: background 0.3s ease;
+}
+
+.content-view {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.content-view.active {
+  display: block;
+}
+
+.content-view_title {
+  font-size: 1.5rem;
+  color: var(--color-accent);
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.75rem;
+}
+
+.content-view_empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-gray);
+  font-style: italic;
+}
+
+/* === LIGHT MODE === */
+body.light-mode {
+  background: var(--color-light-bg);
+  color: var(--color-light-text);
+}
+
+body.light-mode .dashboard-header {
+  background: #4b352a;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+body.light-mode .theme-btn {
+  color: #f7f5f4;
+}
+body.light-mode .dashboard-header_brand a {
+  color: white;
+}
+body.light-mode .dashboard-header_logout-button a {
+  color: white;
+  background-color: #1f2937;
+}
+body.light-mode .content-view_title {
+  color:white;
+}
+body.light-mode .dashboard-title {
+  color:#4b352a;
+}
+
+body.light-mode .dashboard-content-area {
+  background-color: #4b352a;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .tab-button {
+  color: #4b352a;
+}
+
+body.light-mode .tab-button--active {
+  color: v;
+  border-bottom-color: var(--color-accent);
+}
+
+/* === MOBILE STYLES === */
+@media (max-width: 768px) {
+  .mobile-toggle {
+    display: block;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .dashboard-header_actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tabs-list {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tabs-list.show {
+    display: flex;
+  }
+
+  .tab-button {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* === ANIMATION === */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+</style>
+<body>
+
+  <!-- === DASHBOARD HEADER === -->
+  <header class="dashboard-header">
+    <div class="dashboard-header_brand">
+      <a href="#">Hostify Dashboard</a>
+    </div>
+
+    <div class="dashboard-header_actions">
+      <button class="theme-btn" id="themeToggle" title="Toggle Theme">🌙</button>
+      <button class="mobile-toggle" id="mobileToggle" title="Menu">☰</button>
+      <div class="dashboard-header_logout-button">
+        <a href="index.html">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- === MAIN DASHBOARD AREA === -->
+  <main class="dashboard-container">
+    <h2 class="dashboard-title">Staff Dashboard</h2>
+
+    <!-- Tabs -->
+    <nav class="dashboard-tabs">
+      <ul class="tabs-list">
+        <li><button class="tab-button tab-button--active" data-tab="bookings">Bookings</button></li>
+        <li><button class="tab-button" data-tab="orders">Orders</button></li>
+        <li><button class="tab-button" data-tab="feedback">Feedback</button></li>
+      </ul>
+    </nav>
+
+    <!-- Content Area -->
+    <div class="dashboard-content-area">
+      <div class="content-view bookings-cont active" data-view="bookings">
+        <h3 class="content-view_title">All Bookings</h3>
+        <div class="content-view_empty-state">No bookings yet</div>
+      </div>
+
+      <div class="content-view order-cont" data-view="orders">
+        <h3 class="content-view_title">Current Orders</h3>
+        <div class="content-view_empty-state">No orders yet</div>
+      </div>
+
+      <div class="content-view feedback-cont" data-view="feedback">
+        <h3 class="content-view_title">Recent Feedback</h3>
+        <div class="content-view_empty-state">No feedback yet</div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // === TAB SWITCHING ===
+    const tabs = document.querySelectorAll(".tab-button");
+    const views = document.querySelectorAll(".content-view");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        tabs.forEach(t => t.classList.remove("tab-button--active"));
+        tab.classList.add("tab-button--active");
+
+        const target = tab.dataset.tab;
+        views.forEach(view => {
+          view.classList.toggle("active", view.dataset.view === target);
+        });
+      });
+    });
+
+    // === THEME TOGGLE ===
+    const body = document.body;
+    const themeToggle = document.getElementById("themeToggle");
+
+    // Load saved theme
+    if (localStorage.getItem("theme") === "light") {
+      body.classList.add("light-mode");
+      themeToggle.textContent = "🔆";
+    }
+
+    // Toggle theme
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("light-mode");
+      const isLight = body.classList.contains("light-mode");
+      themeToggle.textContent = isLight ? "🔆" : "🌙";
+      localStorage.setItem("theme", isLight ? "light" : "dark");
+    });
+
+    // === MOBILE TOGGLE ===
+    const mobileToggle = document.getElementById("mobileToggle");
+    const tabsList = document.querySelector(".tabs-list");
+
+    mobileToggle.addEventListener("click", () => {
+      tabsList.classList.toggle("show");
+      mobileToggle.textContent = tabsList.classList.contains("show") ? "✕" : "☰";
+    });
+  </script>
+</body>
+</html>

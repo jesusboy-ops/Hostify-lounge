@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hostify - Book Your Table</title>
+  <style>
+    /* Root Variables */
+    :root {
+      --font-inter: 'Inter', sans-serif;
+      --font-roboto: 'Roboto', sans-serif;
+
+      /* Light Mode */
+      --bg-light: #f7f7f7;
+      --text-dark: #1f2937;
+      --accent: #4B352A;
+      --accent-light: #E9D368;
+      --form-bg: #ffffff;
+      --form-border: #e5e7eb;
+      --pill-bg: #f0f4ff;
+      --pill-text: #1e3a8a;
+
+      /* Dark Mode */
+      --bg-dark: #1f2937;
+      --text-light: #f3f4f6;
+      --form-bg-dark: #1f2937;
+      --form-border-dark: #555;
+      --pill-bg-dark: #4b5563;
+      --pill-text-dark: #f3f4f6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-inter);
+      background: var(--bg-light);
+      color: var(--text-dark);
+      transition: background 0.4s, color 0.4s;
+      min-height: 100vh;
+      padding-top: 100px;
+    }
+
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-light);
+    }
+
+    /* Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 70px;
+      background: var(--accent);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+    
+    body.dark .navbar {
+      background: #1f2937;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .logo img {
+      height: 45px;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 35px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links li a {
+      color: white;
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.3s;
+    }
+    
+    .nav-icons {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-links li a:hover {
+      color: var(--accent-light);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--accent-light);
+      font-size: 22px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      margin-left: 20px;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.15);
+    }
+
+    /* Booking Container */
+    .booking-container {
+      display: flex;
+      justify-content: stretch;
+      align-items: stretch;
+      max-width: 1200px;
+      margin: 60px auto;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+      background: var(--form-bg);
+      transition: background 0.4s, color 0.4s;
+    }
+
+    body.dark .booking-container {
+      background: var(--form-bg-dark);
+    }
+
+    /* LEFT - Form */
+    .booking-form-card {
+      flex: 1;
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-header {
+      margin-bottom: 30px;
+    }
+
+    .form-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+
+    .form-subtitle {
+      font-size: 16px;
+      color: #6b7280;
+    }
+
+    body.dark .form-subtitle {
+      color: white;
+    }
+    
+    body.dark .form-title {
+      color: white;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--form-border);
+      border-radius: 10px;
+      font-size: 15px;
+      background: var(--bg-light);
+      color: var(--text-dark);
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    body.dark .form-group input,
+    body.dark .form-group textarea {
+      background: #374151;
+      border: 2px solid var(--form-border-dark);
+      color: var(--text-light);
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent-light);
+      box-shadow: 0 0 0 3px rgba(233, 211, 104, 0.2);
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .confirm-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    body.dark .confirm-btn {
+      background: #E08E00;
+    }
+
+    .confirm-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+    /* Info Pills */
+    .info-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 25px;
+      padding-top: 25px;
+      border-top: 1px solid var(--form-border);
+    }
+
+    body.dark .info-pills {
+      border-color: var(--form-border-dark);
+    }
+
+    .info-pill {
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    body.dark .info-pill {
+      background: var(--pill-bg-dark);
+      color: var(--pill-text-dark);
+    }
+
+    /* RIGHT - Image */
+    .booking-image {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      min-height: 400px;
+    }
+
+    .booking-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .image-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.3), transparent);
+      color: white;
+      padding: 40px;
+    }
+
+    .overlay-title {
+      font-size: 36px;
+      font-weight: 800;
+      margin: 0 0 10px 0;
+    }
+
+    .overlay-subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+      margin: 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+      body {
+        padding-top: 80px;
+      }
+
+      .navbar {
+        padding: 15px 25px;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 70px;
+        right: 25px;
+        background: var(--accent);
+        padding: 20px;
+        border-radius: 10px;
+        gap: 15px;
+      }
+
+      body.dark .nav-links {
+        background: #1f2937;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .booking-container {
+        flex-direction: column;
+        margin: 20px;
+      }
+
+      .booking-image {
+        order: -1;
+        min-height: 250px;
+      }
+
+      .booking-form-card {
+        padding: 30px 20px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .form-title {
+        font-size: 26px;
+      }
+      
+      .overlay-title {
+        font-size: 24px;
+      }
+      
+      .booking-image {
+        min-height: 200px;
+      }
+
+      .booking-form-card {
+        padding: 20px 15px;
+      }
+
+      .navbar {
+        padding: 15px 15px;
+      }
+
+      .logo img {
+        height: 35px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="/images/hcre-4-11.png" alt="Hostify Logo">
+    </div>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="booking.html">Book</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="feedback.html">Feedback</a></li>
+      <li><a href="staffLogin.html">Staff</a></li>
+    </ul>
+
+    <div class="nav-icons">
+      <button class="theme-toggle" id="themeToggle">🌙</button>
+      <button class="menu-toggle" id="menuToggle">☰</button>
+    </div>
+  </nav>
+
+  <!-- Booking Section -->
+  <div class="booking-container">
+    <div class="booking-image">
+      <img src="/images/711e83ee-83f1-485f-8777-03973325a884.jpeg" alt="Hostify Restaurant">
+      <div class="image-overlay">
+        <h2 class="overlay-title">Welcome to Hostify</h2>
+        <p class="overlay-subtitle">Experience culinary excellence in an unforgettable atmosphere</p>
+      </div>
+    </div>
+
+    <div class="booking-form-card">
+      <div class="form-header">
+        <h1 class="form-title">Book Your Table</h1>
+        <p class="form-subtitle">Reserve your spot at Hostify Lounge</p>
+      </div>
+
+      <form id="bookingForm">
+        <div class="form-group">
+          <label>👤 Full Name*</label>
+          <input type="text" placeholder="Johnny Rose" required>
+        </div>
+
+        <div class="form-group">
+          <label>✉️ Email Address*</label>
+          <input type="email" placeholder="name@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label>📞 Phone Number*</label>
+          <input type="tel" placeholder="+1 (234) 567-8900" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>📅 Date*</label>
+            <input type="date" required>
+          </div>
+          <div class="form-group">
+            <label>🕐 Time*</label>
+            <input type="time" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>👥 Number of Guests*</label>
+          <input type="number" placeholder="How many guests?" min="1" max="20" required>
+        </div>
+
+        <div class="form-group">
+          <label>💬 Special Requests (Optional)</label>
+          <textarea placeholder="Any dietary restrictions, celebrations, or special accommodations?"></textarea>
+        </div>
+
+        <button type="submit" class="confirm-btn">Confirm Booking</button>
+
+        <div class="info-pills">
+          <div class="info-pill">📅 Book up to 30 days ahead</div>
+          <div class="info-pill">✉️ Instant confirmation</div>
+          <div class="info-pill">⏰ Arrive 10 min early</div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
+    });
+
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      themeToggle.textContent = document.body.classList.contains('dark') ? '🔆' : '🌙';
+    });
+
+    const form = document.getElementById('bookingForm');
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      alert('🎉 Booking confirmed! You will receive a confirmation email shortly.');
+      form.reset();
+    });
+
+    const dateInput = document.querySelector('input[type="date"]');
+    dateInput.min = new Date().toISOString().split('T')[0];
+  </script>
+</body>
+</html>
