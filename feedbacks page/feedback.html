@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hostify - Feedback</title>
+  <link rel="stylesheet" href="/feedbacks page/feedsback.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="nav-left">
+      <img src="/images/hcre-4-11.png" alt="Hostify Logo">
+    </div>
+
+    <div class="nav-center" id="navCenter">
+      <div class="menu">
+        <a href="/main/index.html">Home</a>
+        <a href="/bookingspage/booking.html">Book</a>
+        <a href="/menu/menu.html">Menu</a>
+        <a href="/feedbacks page/feedback.html">Feedback</a>
+        <a href="/staffpage/staff.html">Staff</a>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button class="mode-toggle" id="modeToggle">🌙</button>
+      <button class="mobile-toggle" id="mobileToggle">☰</button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="feedback">
+    <section class="feedback__section">
+      <h1 class="feedback__title">Share Your Feedback</h1>
+      <p class="feedback__subtitle">Help us improve your experience at Hostify</p>
+
+      <div class="feedback__form">
+        <h3 class="feedback__label">Rate Your Experience</h3>
+
+        <div class="feedback__rating">
+          <label>Your Rating</label>
+          <div class="feedback__stars" id="starContainer">
+            <span data-value="1">★</span>
+            <span data-value="2">★</span>
+            <span data-value="3">★</span>
+            <span data-value="4">★</span>
+            <span data-value="5">★</span>
+          </div>
+        </div>
+
+        <div class="feedback__comments">
+          <label>Your Comments (Optional)</label>
+          <textarea 
+            id="commentInput" 
+            placeholder="Tell us about your experience at Hostify..."
+          ></textarea>
+        </div>
+
+        <button id="submitBtn" class="feedback__btn">Submit Feedback</button>
+      </div>
+    </section>
+
+    <section class="feedback__recent">
+      <h2 class="feedback__recent-title">Recent Feedback</h2>
+      <div id="feedbackList" class="feedback__list">
+        <p>No feedback yet. Be the first to share!</p>
+      </div>
+    </section>
+  </main>
+<script src="/feedbacks page/feedback.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hostify - Book Your Table</title>
+  <link rel="stylesheet" href="/bookingspage/bookings.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="/images/hcre-4-11.png" alt="Hostify Logo">
+    </div>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="/main/index.html">Home</a></li>
+      <li><a href="/bookingspage/booking.html">Book</a></li>
+      <li><a href="/menu/menu.html">Menu</a></li>
+      <li><a href="/feedbacks page/feedback.html">Feedback</a></li>
+      <li><a href="/staffpage/staff.html">Staff</a></li>
+    </ul>
+
+    <div class="nav-icons">
+      <button class="theme-toggle" id="themeToggle">🌙</button>
+      <button class="menu-toggle" id="menuToggle">☰</button>
+    </div>
+  </nav>
+
+  <!-- Booking Section -->
+  <div class="booking-container">
+    <div class="booking-image">
+      <img src="/images/711e83ee-83f1-485f-8777-03973325a884.jpeg" alt="Hostify Restaurant">
+      <div class="image-overlay">
+        <h2 class="overlay-title">Welcome to Hostify</h2>
+        <p class="overlay-subtitle">Experience culinary excellence in an unforgettable atmosphere</p>
+      </div>
+    </div>
+
+    <div class="booking-form-card">
+      <div class="form-header">
+        <h1 class="form-title">Book Your Table</h1>
+        <p class="form-subtitle">Reserve your spot at Hostify Lounge</p>
+      </div>
+
+      <form id="bookingForm">
+        <div class="form-group">
+          <label>👤 Full Name*</label>
+          <input type="text" placeholder="Johnny Rose" required>
+        </div>
+
+        <div class="form-group">
+          <label>✉️ Email Address*</label>
+          <input type="email" placeholder="name@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label>📞 Phone Number*</label>
+          <input type="tel" placeholder="+1 (234) 567-8900" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>📅 Date*</label>
+            <input type="date" required>
+          </div>
+          <div class="form-group">
+            <label>🕐 Time*</label>
+            <input type="time" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>👥 Number of Guests*</label>
+          <input type="number" placeholder="How many guests?" min="1" max="20" required>
+        </div>
+
+        <div class="form-group">
+          <label>💬 Special Requests (Optional)</label>
+          <textarea placeholder="Any dietary restrictions, celebrations, or special accommodations?"></textarea>
+        </div>
+
+        <button type="submit" class="confirm-btn">Confirm Booking</button>
+
+        <div class="info-pills">
+          <div class="info-pill">📅 Book up to 30 days ahead</div>
+          <div class="info-pill">✉️ Instant confirmation</div>
+          <div class="info-pill">⏰ Arrive 10 min early</div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/bookingspage/booking.js"></script>
+</body>
+</html>

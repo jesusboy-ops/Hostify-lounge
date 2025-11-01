@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (enteredPassword === correctPassword) {
         // ✅ Redirect to dashboard
-        window.location.href = "staffDashboard.html";
+        window.location.href = "/staffpage/staffDashboard.html";
       } else {
         alert("Incorrect password. Please try again.");
       }
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      window.location.href = "staff.html"; // ✅ redirects back to login
+      window.location.href = "/staffpage/staff.html"; // ✅ redirects back to login
     });
   }
 });

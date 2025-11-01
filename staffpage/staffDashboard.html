@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hostify | Staff Dashboard</title>
+  <link rel="stylesheet" href="/staffpage/staffdashboard.css" />
+</head>
+
+<body>
+
+  <!-- === DASHBOARD HEADER === -->
+  <header class="dashboard-header">
+    <div class="dashboard-header_brand">
+      <a href="#">Hostify Dashboard</a>
+    </div>
+
+    <div class="dashboard-header_actions">
+      <button class="theme-btn" id="themeToggle" title="Toggle Theme">🌙</button>
+      <button class="mobile-toggle" id="mobileToggle" title="Menu">☰</button>
+      <div class="dashboard-header_logout-button">
+        <a href="/main/index.html">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- === MAIN DASHBOARD AREA === -->
+  <main class="dashboard-container">
+    <h2 class="dashboard-title">Staff Dashboard</h2>
+
+    <!-- Tabs -->
+    <nav class="dashboard-tabs">
+      <ul class="tabs-list">
+        <li><button class="tab-button tab-button--active" data-tab="bookings">Bookings</button></li>
+        <li><button class="tab-button" data-tab="orders">Orders</button></li>
+        <li><button class="tab-button" data-tab="feedback">Feedback</button></li>
+      </ul>
+    </nav>
+
+    <!-- Content Area -->
+    <div class="dashboard-content-area">
+      <div class="content-view bookings-cont active" data-view="bookings">
+        <h3 class="content-view_title">All Bookings</h3>
+        <div class="content-view_empty-state">No bookings yet</div>
+      </div>
+
+      <div class="content-view order-cont" data-view="orders">
+        <h3 class="content-view_title">Current Orders</h3>
+        <div class="content-view_empty-state">No orders yet</div>
+      </div>
+
+      <div class="content-view feedback-cont" data-view="feedback">
+        <h3 class="content-view_title">Recent Feedback</h3>
+        <div class="content-view_empty-state">No feedback yet</div>
+      </div>
+    </div>
+  </main>
+
+ <script src="/staffpage/staffdashboard.js"></script>
+</body>
+</html>
