@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", (e) => {
       e.preventDefault();
-      window.location.href = "/staffpage/staff.html"; // ✅ redirects back to login
+      window.location.href = "../index.html"; 
     });
   }
 });
