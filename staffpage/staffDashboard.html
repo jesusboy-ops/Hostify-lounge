@@ -1,61 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hostify | Staff Dashboard</title>
-  <link rel="stylesheet" href="/staffpage/staffdashboard.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Dashboard - Hostify Lounge</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/staffpage/staffdashboard.css">
+
 </head>
-
 <body>
+<button class="menu-toggle" id="menuToggle"><span></span></button>
 
-  <!-- === DASHBOARD HEADER === -->
-  <header class="dashboard-header">
-    <div class="dashboard-header_brand">
-      <a href="#">Hostify Dashboard</a>
-    </div>
+<div class="dashboard-container">
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-header"><h1>Hostify Lounge</h1><p>Staff Dashboard</p></div>
+<nav class="nav-menu">
+<div class="nav-item active" data-section="dashboard"><span class="nav-item-icon">📊</span><span>Dashboard</span></div>
+<div class="nav-item" data-section="bookings"><span class="nav-item-icon">📅</span><span>Bookings</span></div>
+<div class="nav-item" data-section="orders"><span class="nav-item-icon">🍽️</span><span>Orders</span></div>
+<div class="nav-item" data-section="feedback"><span class="nav-item-icon">💬</span><span>Feedback</span></div>
+</nav>
+<div class="sidebar-footer"><button class="logout-button" id="logoutBtn">Logout</button></div>
+</aside>
 
-    <div class="dashboard-header_actions">
-      <button class="theme-btn" id="themeToggle" title="Toggle Theme">🌙</button>
-      <button class="mobile-toggle" id="mobileToggle" title="Menu">☰</button>
-      <div class="dashboard-header_logout-button">
-        <a href="../index.html">Logout</a>
-      </div>
-    </div>
-  </header>
+<main class="main-content" id="mainContent">
+<div class="welcome-section">
+<h2 id="welcomeMessage">Welcome back 👋</h2>
+<p>Manage your restaurant operations efficiently</p>
+</div>
 
-  <!-- === MAIN DASHBOARD AREA === -->
-  <main class="dashboard-container">
-    <h2 class="dashboard-title">Staff Dashboard</h2>
+<div class="content-section active" id="dashboard-section">
+<div class="section-header"><h3>Dashboard Overview</h3><p>Quick summary of today's operations</p></div>
+<div class="empty-state"><div class="empty-state-icon">📊</div><h4>Dashboard Summary</h4><p>Your operations overview will appear here. Select a section from the sidebar to view detailed information.</p></div>
+</div>
 
-    <!-- Tabs -->
-    <nav class="dashboard-tabs">
-      <ul class="tabs-list">
-        <li><button class="tab-button tab-button--active" data-tab="bookings">Bookings</button></li>
-        <li><button class="tab-button" data-tab="orders">Orders</button></li>
-        <li><button class="tab-button" data-tab="feedback">Feedback</button></li>
-      </ul>
-    </nav>
+<div class="content-section" id="bookings-section">
+<div class="section-header"><h3>Restaurant Bookings</h3><p>View and manage customer reservations</p></div>
+<div class="data-table"><table><thead><tr><th>Customer Name</th><th>Date</th><th>Time</th><th>Table</th><th>Status</th><th>Actions</th></tr></thead><tbody id="bookingsTableBody"></tbody></table></div>
+</div>
 
-    <!-- Content Area -->
-    <div class="dashboard-content-area">
-      <div class="content-view bookings-cont active" data-view="bookings">
-        <h3 class="content-view_title">All Bookings</h3>
-        <div class="content-view_empty-state">No bookings yet</div>
-      </div>
+<div class="content-section" id="orders-section">
+<div class="section-header"><h3>Customer Orders</h3><p>Track and manage all incoming orders</p></div>
+<div class="data-table"><table><thead><tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Time</th><th>Actions</th></tr></thead><tbody id="ordersTableBody"></tbody></table></div>
+</div>
 
-      <div class="content-view order-cont" data-view="orders">
-        <h3 class="content-view_title">Current Orders</h3>
-        <div class="content-view_empty-state">No orders yet</div>
-      </div>
+<div class="content-section" id="feedback-section">
+<div class="section-header"><h3>Customer Feedback</h3><p>Reviews and comments from your customers</p></div>
+<div class="card-grid" id="feedbackGrid"></div>
+</div>
+</main>
+</div>
 
-      <div class="content-view feedback-cont" data-view="feedback">
-        <h3 class="content-view_title">Recent Feedback</h3>
-        <div class="content-view_empty-state">No feedback yet</div>
-      </div>
-    </div>
-  </main>
-
- <script src="/staffpage/staffdashboard.js"></script>
+<script src="/staffpage/staffdashboard.js"></script>
 </body>
 </html>

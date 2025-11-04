@@ -1,47 +1,51 @@
-// staff.js
-document.addEventListener("DOMContentLoaded", () => {
-  const passwordInput = document.querySelector("#password");
-  const loginButton = document.querySelector(".login-form_button");
+ const usernameInput = document.getElementById("username");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const errorMessage = document.getElementById("errorMessage");
 
-  if (loginButton) {
-    loginButton.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      const enteredPassword = passwordInput.value.trim();
-      const correctPassword = "staff123";
-
-      if (enteredPassword === correctPassword) {
-        // ✅ Redirect to dashboard
-        window.location.href = "/staffpage/staffDashboard.html";
-      } else {
-        alert("Incorrect password. Please try again.");
-      }
-    });
-  }
-
-  // === TAB SWITCHING FOR DASHBOARD ===
-  const tabs = document.querySelectorAll(".tab-button");
-  const views = document.querySelectorAll(".content-view");
-
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      // Remove active states
-      tabs.forEach((t) => t.classList.remove("tab-button--active"));
-      views.forEach((v) => v.classList.remove("active"));
-
-      // Add active states to clicked tab
-      tab.classList.add("tab-button--active");
-      const viewName = tab.getAttribute("data-tab");
-      document.querySelector(`[data-view="${viewName}"]`).classList.add("active");
-    });
+  // Clear autofilled data
+  window.addEventListener("DOMContentLoaded", () => {
+    [usernameInput, emailInput, passwordInput].forEach(el => el.value = "");
   });
 
-  // === LOGOUT ===
-  const logoutBtn = document.querySelector(".dashboard-header_logout-button a");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      window.location.href = "../index.html"; 
-    });
-  }
-});
+  const validAccounts = [
+    { email: "admin@hostify.com", password: "admin123", role: "Admin" },
+    { email: "staff@hostify.com", password: "staff123", role: "Staff" }
+  ];
+
+  document.getElementById("loginForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const username = usernameInput.value.trim();
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    if (!username || username.length < 2) {
+      errorMessage.textContent = "Please enter a valid username.";
+      errorMessage.classList.add("show");
+      return;
+    }
+
+    const account = validAccounts.find(acc => acc.email === email && acc.password === password);
+
+    if (!account) {
+      errorMessage.textContent = "Invalid email or password.";
+      errorMessage.classList.add("show");
+      return;
+    }
+
+    errorMessage.classList.remove("show");
+
+    // Save for dashboard
+    localStorage.setItem("staffName", username);
+    localStorage.setItem("staffRole", account.role);
+
+    // Redirect to dashboard after fadeout
+    document.querySelector(".login-container").style.animation = "fadeOut 0.3s ease-out";
+    setTimeout(() => window.location.href = "staffdashboard.html", 300);
+  });
+
+  // Hide error when typing
+  [usernameInput, emailInput, passwordInput].forEach(el =>
+    el.addEventListener("input", () => errorMessage.classList.remove("show"))
+  );

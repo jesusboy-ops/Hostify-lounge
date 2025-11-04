@@ -1,42 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hostify | Staff Login</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Login - Hostify Lounge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/staffpage/staffpage.css">
+ 
 </head>
 <body>
   <div class="login-container">
-    <!-- LEFT SIDE -->
-    <div class="login-left">
-      <h2>⚠️ Staff Only</h2>
-     
-      <div class="warning-box">
-        
-Only Hostify staff members are authorized to access this page, Unauthorized access will be restricted
-      </div>
+    <a href="../index.html" class="back-link">Back to Home</a>
+
+    <div class="logo-section">
+      <h1>Hostify Lounge</h1>
+      <p>Staff Portal</p>
     </div>
 
-    <!-- RIGHT SIDE -->
-    <div class="login-right">
-      <div class="login-header">
-        <h1>Staff Login</h1>
-        <p>Enter your password to access the Hostify Dashboard</p>
+    <form id="loginForm" autocomplete="off">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter your display name" autocomplete="off" required>
       </div>
 
-      <form>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Enter staff password" required />
-        </div>
-        <button class="login-form_button">Login</button>
-      </form>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" autocomplete="off" required>
+      </div>
 
-      <a href="../index.html" class="footer-link">← Back to Home</a>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" autocomplete="new-password" required>
+        <div class="error-message" id="errorMessage"></div>
+      </div>
+
+      <button type="submit" class="login-button">Login to Dashboard</button>
+    </form>
+
+    <div class="footer-text">
+      Hostify Lounge Staff Management System
     </div>
   </div>
 
-  <script src="/staffpage/staff.js"></script>
+<script src="/staffpage/staff.js"></script>
+
 </body>
 </html>
