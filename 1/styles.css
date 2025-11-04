@@ -1,16 +1,15 @@
 /* === BASE FONTS & VARIABLES === */
 :root {
-  --font-roboto: 'Roboto', sans-serif;
-  --font-inter: 'Inter', sans-serif;
-  --font-poppins: 'Poppins', sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
 
-  --text-yellow: #4B352A;
-  --text-dark: #1A1E37;
-  --bg-light: #FFFDF1;
-  --nav-bg: #4B352A;
+  --text-yellow: #4b352a;
+  --text-dark: #1a1e37;
+  --bg-light: #fffdf1;
+  --nav-bg: #4b352a;
 }
 
-/* === RESET === */
 * {
   margin: 0;
   padding: 0;
@@ -29,7 +28,6 @@ img {
   display: block;
 }
 
-/* === NAVBAR === */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -52,7 +50,6 @@ img {
   gap: 35px;
   font-size: 16px;
   font-weight: 400;
-  
 }
 .nav-links a {
   text-decoration: none;
@@ -89,7 +86,6 @@ img {
   transform: rotate(15deg);
 }
 
-/* === HERO SECTION === */
 .hero {
   text-align: center;
   padding: 120px 20px 50px;
@@ -124,7 +120,6 @@ img {
   box-shadow: 0 6px 20px rgba(233, 211, 104, 0.4);
 }
 
-/* === IMAGE SECTION === */
 .image-section {
   display: flex;
   justify-content: center;
@@ -150,7 +145,6 @@ img {
   color: var(--text-dark);
 }
 
-/* === FOOTER === */
 .footer {
   background: var(--nav-bg);
   color: white;
@@ -175,7 +169,7 @@ img {
 .footer-left p {
   margin: 0;
   font-size: 14px;
-  color: #E9D368;
+  color: #e9d368;
 }
 .footer-links a {
   color: white;
@@ -183,7 +177,7 @@ img {
   margin: 0 10px;
 }
 .footer-links a:hover {
-  color: #E9D368;
+  color: #e9d368;
 }
 .footer-contact p {
   margin: 0;
@@ -193,13 +187,12 @@ img {
   text-align: center;
   margin-top: 10px;
   font-size: 12px;
-  color: #E9D368;
+  color: #e9d368;
 }
 
-/* === DARK MODE === */
 body.dark-mode {
-  background: #2B2B2B;
-  color: #EEE;
+  background: #2b2b2b;
+  color: #eee;
 }
 body.dark-mode .navbar {
   background: #1f2937;
@@ -209,20 +202,20 @@ body.dark-mode .hero {
   background: #1f2732;
 }
 body.dark-mode .hero h1 {
-  color: #E9D368;
+  color: #e9d368;
 }
 body.dark-mode .image-section {
   background: #1f2732;
 }
 body.dark-mode .image-card p {
-  color: #EEE;
+  color: #eee;
 }
 body.dark-mode .image-card img {
   background: #1f2732;
 }
 body.dark-mode .book-btn {
-  background: #E9D368;
-  color: #2B2B2B;
+  background: #e9d368;
+  color: #2b2b2b;
 }
 
 body.dark-mode .book-btn:hover {
@@ -230,26 +223,25 @@ body.dark-mode .book-btn:hover {
 }
 body.dark-mode .footer {
   background: #293340;
-  color: #EEE;
+  color: #eee;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 body.dark-mode .footer-left p,
 body.dark-mode .footer-bottom {
-  color: #E9D368;
+  color: #e9d368;
 }
-.contain{
+.contain {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 20px;
 }
 
-/* === RESPONSIVE === */
 @media (max-width: 768px) {
   .nav-links {
     display: none;
     flex-direction: column;
-    background:#4B352A ;
+    background: #4b352a;
     position: absolute;
     top: 70px;
     right: 20px;
@@ -259,29 +251,27 @@ body.dark-mode .footer-bottom {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   }
   body.dark-mode .nav-links {
-  background:#293340 ;
-
-}
+    background: #293340;
+  }
   .nav-links.active {
     display: flex;
   }
   .menu-toggle {
     display: block;
-    
   }
-  .contain{
+  .contain {
     flex-direction: column;
   }
   .footer-content {
-  display: flex;
-  flex: row;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  max-width: 1000px;
-  margin: 0 auto;
-  gap: 20px;
-}
+    display: flex;
+    flex: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    max-width: 1000px;
+    margin: 0 auto;
+    gap: 20px;
+  }
   .navbar {
     padding: 15px 20px;
   }

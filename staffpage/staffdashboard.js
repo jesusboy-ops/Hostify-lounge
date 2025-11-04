@@ -1,5 +1,5 @@
 
-const API_BASE = "https://yourbackenddomain.com/api"; // replace with your backend
+const API_BASE = ""; 
 
 function checkAuth(){
   const staffName = localStorage.getItem('staffName');

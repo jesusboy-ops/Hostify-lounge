@@ -293,7 +293,7 @@
   cursor: pointer;
   font-weight: 600;
 }
-/* Star Rating */
+
 #starContainer span {
   font-size: 32px;
   cursor: pointer;
@@ -304,7 +304,6 @@
   color: #E9D368;
 }
 
-/* Modal */
 .modal {
   display: none;
   position: fixed;
@@ -321,7 +320,6 @@
   text-align: center;
 }
 
-/* Overlay Spinner */
 .feedback-overlay {
   display: none;
   position: fixed;
@@ -352,8 +350,12 @@
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 #submitName {
-  background: #2B3148;
+  background: #2b3148;
   color: #fff;
+}
+body.light-mode #submitName {
+  background: #4b352a;
+  color: #111;
 }
 
 #cancelName {

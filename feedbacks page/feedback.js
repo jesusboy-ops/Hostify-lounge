@@ -1,6 +1,6 @@
-const API_BASE = "http://localhost:4000/api";
+const API_BASE = "";
 
-// Theme toggle
+
 const modeToggle = document.getElementById("modeToggle");
 const body = document.body;
 if (localStorage.getItem("theme") === "light") {
@@ -14,7 +14,7 @@ modeToggle.addEventListener("click", () => {
   localStorage.setItem("theme", isLight ? "light" : "dark");
 });
 
-// Mobile Menu Toggle
+
 const mobileToggle = document.getElementById("mobileToggle");
 const navCenter = document.getElementById("navCenter");
 mobileToggle.addEventListener("click", () => {
@@ -22,13 +22,13 @@ mobileToggle.addEventListener("click", () => {
   mobileToggle.textContent = navCenter.classList.contains("active") ? "✕" : "☰";
 });
 
-// Spinner overlay
+
 const feedbackOverlay = document.createElement("div");
 feedbackOverlay.id = "feedbackOverlay";
 feedbackOverlay.classList.add("feedback-overlay");
 document.body.appendChild(feedbackOverlay);
 
-// Star rating
+
 const stars = document.querySelectorAll("#starContainer span");
 let selectedRating = 0;
 stars.forEach((star) => {
@@ -45,7 +45,7 @@ function updateStars(rating) {
   });
 }
 
-// Feedback submission
+
 const submitBtn = document.getElementById("submitBtn");
 const feedbackList = document.getElementById("feedbackList");
 const commentInput = document.getElementById("commentInput");
@@ -74,7 +74,7 @@ submitName.addEventListener("click", async () => {
 
   const feedbackData = { ...tempFeedbackData, name, date: new Date().toISOString() };
 
-  // Show spinner
+  
   feedbackOverlay.innerHTML = `<div class="overlay-content">
                                  <div class="spinner"></div>
                                  <p>Sending feedback...</p>
