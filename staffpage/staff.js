@@ -42,7 +42,7 @@
 
     // Redirect to dashboard after fadeout
     document.querySelector(".login-container").style.animation = "fadeOut 0.3s ease-out";
-    setTimeout(() => window.location.href = "staffdashboard.html", 300);
+    setTimeout(() => window.location.href = "/staffpage/staffdashboard.html", 300);
   });
 
   // Hide error when typing
