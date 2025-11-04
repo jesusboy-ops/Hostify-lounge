@@ -98,6 +98,14 @@ const menuItems = [
     category: "drinks",
     image: "/images/Description_ _Experience a burst of sunshine with….jpeg",
   },
+  {
+    _id: "11",
+    name: "palm wine",
+    description: "Freshly tapped",
+    price: 5000,
+    category: "drinks",
+    image: "/images/Palm Wine - Traditional West African Drink _ 196….jpeg",
+  },
 
   // food
   {
