@@ -32,7 +32,7 @@ const menuItems = [
     description: "Sweet and refreshing",
     price: 5000,
     category: "drinks",
-    image: "/images/undefined (10).jpeg",
+    image: "/images/undefined.jpeg",
   },
   {
     _id: "3",
