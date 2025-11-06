@@ -15,10 +15,8 @@
 
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
-      <li><a href="/bookingspage/booking.html">Book</a></li>
       <li><a href="/menu/menu.html">Menu</a></li>
       <li><a href="/feedbacks page/feedback.html">Feedback</a></li>
-      <li><a href="/staffpage/staff.html">Staff</a></li>
     </ul>
 
     <div class="nav-icons">
@@ -33,7 +31,7 @@
       <img src="/images/711e83ee-83f1-485f-8777-03973325a884.jpeg" alt="Hostify Restaurant">
       <div class="image-overlay">
         <h2 class="overlay-title">Welcome to Hostify</h2>
-        <p class="overlay-subtitle">Every moment deserves a good space</p>
+        <p class="overlay-subtitle">Every moment deserves a good space</p>
       </div>
     </div>
 
@@ -45,39 +43,40 @@
 
       <form id="bookingForm">
         <div class="form-group">
-          <label>👤 Full Name*</label>
-          <input type="text" placeholder="Johnny Rose" required>
+          <label for="customerName">👤 Full Name*</label>
+          <input type="text" id="fullName" name="customerName" placeholder="Johnny Rose" required>
         </div>
 
         <div class="form-group">
-          <label>✉️ Email Address*</label>
-          <input type="email" placeholder="name@example.com" required>
+          <label for="email">✉️ Email Address*</label>
+          <input type="email" id="email" name="email" placeholder="name@example.com" required>
         </div>
 
         <div class="form-group">
-          <label>📞 Phone Number*</label>
-          <input type="tel" placeholder="+1 (234) 567-8900" required>
+          <label for="phoneNum">📞 Phone Number*</label>
+          <input type="tel" id="phone" name="phoneNum" placeholder="+1 (234) 567-8900" required>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label>📅 Date*</label>
-            <input type="date" required>
+            <label for="date">📅 Date*</label>
+            <input type="date" id="date" name="date" required>
           </div>
           <div class="form-group">
-            <label>🕐 Time*</label>
-            <input type="time" required>
+            <label for="time">🕐 Time*</label>
+            <input type="time" id="time" name="time" required>
           </div>
         </div>
 
         <div class="form-group">
-          <label>👥 Number of Guests*</label>
-          <input type="number" placeholder="How many guests?" min="1" max="20" required>
+          <label for="people">👥 Number of Guests*</label>
+          <input type="number" id="guests" name="people" placeholder="How many guests?" min="1" max="20" required>
         </div>
 
+
         <div class="form-group">
-          <label>💬 Special Requests (Optional)</label>
-          <textarea placeholder="Any dietary restrictions, celebrations, or special accommodations?"></textarea>
+          <label for="specialRequests">💬 Special Requests (Optional)</label>
+          <textarea id="specialRequests" name="specialRequests" placeholder="Any dietary restrictions, celebrations, or special accommodations?"></textarea>
         </div>
 
         <button type="submit" class="confirm-btn">Confirm Booking</button>
@@ -90,7 +89,12 @@
       </form>
     </div>
   </div>
-<div id="bookingMessage" style="text-align:center; margin-top:20px;"></div>
+
+  <!-- Booking Overlay -->
+  <div id="bookingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999;"></div>
+
+  <!-- Message Container -->
+  <div id="messageContainer" style="display: none; position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 5px; color: white; z-index: 10000; font-weight: bold;"></div>
 
   <script src="/bookingspage/booking.js"></script>
 </body>

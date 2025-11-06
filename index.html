@@ -6,6 +6,7 @@
   <title>Hostify Lounge</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto|Inter|Poppins&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/1/styles.css" />
+  <link rel="stylesheet" href="/auth-modal.css" />
 </head>
 <body>
 
@@ -20,10 +21,11 @@
       <li><a href="/bookingspage/booking.html">Book</a></li>
       <li><a href="/menu/menu.html">Menu</a></li>
       <li><a href="/feedbacks page/feedback.html">Feedback</a></li>
-      <li><a href="/staffpage/staff.html">Staff</a></li>
+     
     </ul>
 
     <div class="nav-actions">
+      <div id="authButtons"></div>
       <button id="themeToggle" class="theme-toggle">🌙</button>
       <button class="menu-toggle">☰</button>
     </div>
@@ -69,7 +71,7 @@
         <a href="/bookingspage/booking.html">Book</a>
         <a href="/menu/menu.html">Menu</a>
         <a href="/feedbacks page/feedback.html">Feedback</a>
-        <a href="/staffpage/staff.html">Staff</a>
+        
       </div>
 
       <div class="footer-contact">
@@ -83,7 +85,74 @@
     </div>
   </footer>
 
+  <!-- Auth Modal -->
+  <div id="authModal" class="auth-modal">
+    <div class="auth-modal-content">
+      <button class="auth-close" id="authCloseBtn">&times;</button>
+      
+      <div class="auth-welcome">
+        <h2 class="auth-title">WELCOME TO HOSTIFY</h2>
+        <p class="auth-subtitle">Order now to enjoy a stress-free, time saving experience</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="signup">Sign up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form active">
+        <div class="auth-input-group">
+          <span class="auth-icon">👤</span>
+          <input type="email" placeholder="Email" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <span class="auth-icon">🔒</span>
+          <input type="password" placeholder="Password" required autocomplete="current-password">
+        </div>
+        <p class="auth-terms">By Signing in, you are agreeing to our privacy policy and lounge/bar policy</p>
+        <button type="submit" class="auth-submit-btn">Login</button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" class="auth-form">
+        <div class="auth-input-group">
+          <span class="auth-icon">👤</span>
+          <input type="text" placeholder="Username" required autocomplete="name">
+        </div>
+        <div class="auth-input-group">
+          <span class="auth-icon">👤</span>
+          <input type="text" placeholder="name" required autocomplete="name">
+        </div>
+        <div class="auth-input-group">
+          <span class="auth-icon">✉️</span>
+          <input type="email" placeholder="Email" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <span class="auth-icon">📞</span>
+          <input type="tel" placeholder="tel" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <span class="auth-icon">🔒</span>
+          <input type="password" placeholder="Password" required autocomplete="new-password">
+        </div>
+        <select id="userRole" name="role" required>
+          <option value="">Select Role</option>
+          <option value="customer">user</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Staff</option>
+        </select>
+        <p class="auth-terms">By Signing up, you are agreeing to our privacy policy and lounge/bar policy</p>
+        <button type="submit" class="auth-submit-btn">Sign up</button>
+      </form>
+
+      <div class="auth-brand">Hostify</div>
+    </div>
+  </div>
+
   <script src="/1/script.js"></script>
+  <script src="../auth.js"></script>
 
 </body>
 </html>

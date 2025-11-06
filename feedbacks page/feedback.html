@@ -4,11 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hostify - Feedback</title>
-  <link rel="stylesheet" href="/feedbacks page/feedsback.css">
+  <link rel="stylesheet" href="/feedbacks page/feedback.css">
+  <link rel="stylesheet" href="../auth-modal.css">
 </head>
 <body>
 
-  
+  <!-- Navbar -->
   <nav>
     <div class="nav-left">
       <img src="/images/hcre-4-11.png" alt="Hostify Logo">
@@ -17,22 +18,23 @@
     <div class="nav-center" id="navCenter">
       <div class="menu">
         <a href="../index.html">Home</a>
-        <a href="/bookingspage/booking.html">Book</a>
-        <a href="/menu/menu.html">Menu</a>
-        <a href="/feedbacks page/feedback.html">Feedback</a>
-        <a href="/staffpage/staff.html">Staff</a>
+        <a href="/bookingspage/booking.html" class="protected-btn">Book</a>
+        <a href="/menu/menu.html" class="protected-btn">Menu</a>
+     
       </div>
     </div>
 
     <div class="nav-right">
+      <div id="authButtons"></div>
       <button class="mode-toggle" id="modeToggle">🌙</button>
       <button class="mobile-toggle" id="mobileToggle">☰</button>
     </div>
   </nav>
-  
-<div id="feedbackMessage"></div>
 
+  <!-- Onscreen Message Container -->
+  <div id="messageContainer" class="onscreen-message"></div>
 
+  <!-- Feedback Section -->
   <main class="feedback">
     <section class="feedback__section">
       <h1 class="feedback__title">Share Your Feedback</h1>
@@ -40,7 +42,6 @@
 
       <div class="feedback__form">
         <h3 class="feedback__label">Rate Your Experience</h3>
-
         <div class="feedback__rating">
           <label>Your Rating</label>
           <div class="feedback__stars" id="starContainer">
@@ -54,10 +55,7 @@
 
         <div class="feedback__comments">
           <label>Your Comments (Optional)</label>
-          <textarea 
-            id="commentInput" 
-            placeholder="Tell us about your experience at Hostify..."
-          ></textarea>
+          <textarea id="commentInput" placeholder="Tell us about your experience at Hostify..."></textarea>
         </div>
 
         <button id="submitBtn" class="feedback__btn">Submit Feedback</button>
@@ -69,20 +67,75 @@
       <div id="feedbackList" class="feedback__list">
         <p>No feedback yet. Be the first to share!</p>
       </div>
-      
-<div id="nameModal" class="modal">
-  <div class="modal-content">
-    <h3>Enter Your Name</h3>
-    <input type="text" id="userNameInput" placeholder="Your Name">
-    <div class="modal-buttons">
-      <button id="cancelName">Cancel</button>
-      <button id="submitName">Submit</button>
-    </div>
-  </div>
-</div>
 
+      <!-- Name Modal -->
+      <div id="nameModal" class="modal">
+        <div class="modal-content">
+          <h3>Enter Your Name</h3>
+          <input type="text" id="userNameInput" placeholder="Your Name">
+          <div class="modal-buttons">
+            <button id="cancelName">Cancel</button>
+            <button id="submitName">Submit</button>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
-<script src="/feedbacks page/feedback.js"></script>
+   <!-- Auth Modal -->
+  <div id="authModal" class="auth-modal">
+    <div class="auth-modal-content">
+      <button class="auth-close" id="authCloseBtn">&times;</button>
+      
+      <div class="auth-welcome">
+        <h2 class="auth-title">WELCOME TO HOSTIFY</h2>
+        <p class="auth-subtitle">Order now to enjoy a stress-free, time saving experience</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="signup">Sign up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form active">
+        <div class="auth-input-group">
+          <span class="auth-icon">👤</span>
+          <input type="email" placeholder="Email" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <span class="auth-icon">🔒</span>
+          <input type="password" placeholder="Password" required autocomplete="current-password">
+        </div>
+        <p class="auth-terms">By Signing in, you are agreeing to our privacy policy and lounge/bar policy</p>
+        <button type="submit" class="auth-submit-btn">Login</button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" class="auth-form">
+        <div class="auth-input-group">
+          <span class="auth-icon">👤</span>
+          <input type="text" placeholder="Username" required autocomplete="name">
+        </div>
+        <div class="auth-input-group">
+          <span class="auth-icon">✉️</span>
+          <input type="email" placeholder="Email" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <span class="auth-icon">🔒</span>
+          <input type="password" placeholder="Password" required autocomplete="new-password">
+        </div>
+        <p class="auth-terms">By Signing up, you are agreeing to our privacy policy and lounge/bar policy</p>
+        <button type="submit" class="auth-submit-btn">Sign up</button>
+      </form>
+
+      <div class="auth-brand">Hostify</div>
+  <div id="messageContainer"></div>
+    </div>
+  </div>
+  <script src="/feedbacks page/feedback.js"></script>
+  <script src="../auth.js"></script>
+  <script src="/1/script.js"></script>
+  <script></script>
 </body>
 </html>
