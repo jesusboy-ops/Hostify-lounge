@@ -1,8 +1,7 @@
+// === API CONFIG ===
+const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
-
-const API_BASE = "https://hostify-app.vercel.app/api";
-
-
+// === AUTH HELPERS ===
 function getAuthToken() {
   return localStorage.getItem("authToken");
 }
@@ -16,18 +15,21 @@ function checkAuth() {
   return token;
 }
 
-
+// === GENERIC API REQUEST ===
 async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
   try {
     const headers = { "Content-Type": "application/json" };
     if (auth) headers["Authorization"] = `Bearer ${getAuthToken()}`;
+
     const res = await fetch(`${API_BASE}/${endpoint}`, {
       method,
       headers,
       body: body ? JSON.stringify(body) : null,
     });
-    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
-    return await res.json();
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || `Request failed: ${res.status}`);
+    return data;
   } catch (err) {
     console.error(err);
     alert(`Server error: ${err.message}`);
@@ -35,25 +37,25 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
   }
 }
 
-
-function getSpinnerHTML() {
-  return '<tr><td colspan="6">⏳ Loading...</td></tr>';
-}
-
+// === BOOKINGS HANDLERS ===
 async function renderBookings() {
   const tbody = document.getElementById("bookingsTableBody");
-  tbody.innerHTML = getSpinnerHTML();
-  const bookings = await apiRequest("book/viewbooking") || [];
+  tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
+
+  const res = await apiRequest("bookings/all") || {};
+  const bookings = res.bookings || [];
+
   if (!bookings.length) {
     tbody.innerHTML = '<tr><td colspan="6">No bookings found</td></tr>';
     return;
   }
+
   tbody.innerHTML = bookings.map(b => `
     <tr>
-      <td>${b.fullName || '-'}</td>
+      <td>${b.customerName || '-'}</td>
       <td>${b.date || '-'}</td>
       <td>${b.time || '-'}</td>
-      <td>${b.table || '-'}</td>
+      <td>${b.space || '-'}</td>
       <td>${b.status || 'Pending'}</td>
       <td>
         <button class="action-btn approve" onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
@@ -63,21 +65,67 @@ async function renderBookings() {
   `).join('');
 }
 
-async function updateBookingStatus(id, newStatus) {
-  if (!confirm(`Change booking status to "${newStatus}"?`)) return;
-  await apiRequest(`book/update/${id}`, "PUT", { status: newStatus });
+async function updateBookingStatus(id, status) {
+  if (!confirm(`Change booking status to "${status}"?`)) return;
+  await apiRequest(`bookings/update/${id}`, "PUT", { status });
   renderBookings();
 }
 
+async function deleteBooking(id) {
+  if (!confirm("Delete this booking?")) return;
+  await apiRequest(`bookings/delete/${id}`, "DELETE");
+  renderBookings();
+}
 
+async function cancelBooking(id) {
+  if (!confirm("Cancel this booking?")) return;
+  await apiRequest(`bookings/cancel/${id}`, "PUT");
+  renderBookings();
+}
+
+// === BOOKING FORM SUBMISSION ===
+const bookingForm = document.getElementById("bookingForm");
+bookingForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const token = checkAuth();
+  if (!token) return;
+
+  const customerName = document.getElementById("fullName")?.value.trim();
+  const phoneNum = document.getElementById("phone")?.value.trim();
+  const space = document.getElementById("space")?.value.trim() || "Default";
+  const date = document.getElementById("date")?.value;
+  const time = document.getElementById("time")?.value;
+  const people = Number(document.getElementById("guests")?.value) || 1;
+
+  if (!customerName || !phoneNum || !date || !time) {
+    alert("Please fill in all required fields");
+    return;
+  }
+
+  const bookingData = { customerName, phoneNum, space, date, time, people };
+
+  try {
+    const res = await apiRequest("bookings/book", "POST", bookingData);
+    alert(res.message || "Booking submitted!");
+    bookingForm.reset();
+    renderBookings();
+  } catch (err) {
+    console.error("Booking error:", err);
+    alert("Error submitting booking: " + err.message);
+  }
+});
+
+// === FEEDBACK HANDLERS ===
 async function renderFeedback() {
   const grid = document.getElementById("feedbackGrid");
   grid.innerHTML = "<p>⏳ Loading...</p>";
+
   const feedback = await apiRequest("feedback") || [];
   if (!feedback.length) {
     grid.innerHTML = '<div class="empty-state"><p>No feedback yet.</p></div>';
     return;
   }
+
   grid.innerHTML = feedback.map(f => `
     <div class="feedback-card">
       <div class="feedback-header">
@@ -91,12 +139,12 @@ async function renderFeedback() {
 }
 
 async function deleteFeedback(id) {
-  if (!confirm("Are you sure you want to delete this feedback?")) return;
+  if (!confirm("Delete this feedback?")) return;
   await apiRequest(`feedback/${id}`, "DELETE");
   renderFeedback();
 }
 
-
+// === SIDEBAR NAVIGATION ===
 document.querySelectorAll(".nav-item").forEach(item => {
   item.addEventListener("click", function () {
     document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
@@ -113,22 +161,21 @@ document.querySelectorAll(".nav-item").forEach(item => {
   });
 });
 
-
 document.getElementById("menuToggle").addEventListener("click", function () {
   document.getElementById("sidebar").classList.toggle("visible");
   this.classList.toggle("active");
 });
 
-
+// === LOGOUT ===
 document.getElementById("logoutBtn").addEventListener("click", () => {
   if (confirm("Logout now?")) {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userData");
-    window.location.href = "auth.html";
+    window.location.href = "../index.html";
   }
 });
 
-
+// === DASHBOARD INIT ===
 async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
@@ -136,8 +183,8 @@ async function initDashboard() {
   const user = JSON.parse(localStorage.getItem("userData") || "{}");
   document.getElementById("welcomeMessage").textContent = `Welcome back, ${user.username || "User"} 👋`;
 
-  renderBookings();
-  renderFeedback();
+  await renderBookings();
+  await renderFeedback();
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);

@@ -25,7 +25,6 @@
     </div>
   </nav>
 
-  
   <div class="booking-container">
     <div class="booking-image">
       <img src="/images/711e83ee-83f1-485f-8777-03973325a884.jpeg" alt="Hostify Restaurant">
@@ -43,18 +42,23 @@
 
       <form id="bookingForm">
         <div class="form-group">
-          <label for="customerName">👤 Full Name*</label>
+          <label for="fullName">👤 Full Name*</label>
           <input type="text" id="fullName" name="customerName" placeholder="Johnny Rose" required>
         </div>
 
         <div class="form-group">
-          <label for="email">✉️ Email Address*</label>
-          <input type="email" id="email" name="email" placeholder="name@example.com" required>
+          <label for="phone">📞 Phone Number*</label>
+          <input type="tel" id="phone" name="phoneNum" placeholder="+1 (234) 567-8900" required>
         </div>
 
         <div class="form-group">
-          <label for="phoneNum">📞 Phone Number*</label>
-          <input type="tel" id="phone" name="phoneNum" placeholder="+1 (234) 567-8900" required>
+          <label for="space">🪑 Table / Space*</label>
+          <select id="space" name="space" required>
+
+            <option value="VIP">VIP</option>
+            <option value="Regular">Regular</option>
+            <option value="Outdoor">Outdoor</option>
+          </select>
         </div>
 
         <div class="form-row">
@@ -69,10 +73,9 @@
         </div>
 
         <div class="form-group">
-          <label for="people">👥 Number of Guests*</label>
+          <label for="guests">👥 Number of Guests*</label>
           <input type="number" id="guests" name="people" placeholder="How many guests?" min="1" max="20" required>
         </div>
-
 
         <div class="form-group">
           <label for="specialRequests">💬 Special Requests (Optional)</label>
@@ -97,5 +100,7 @@
   <div id="messageContainer" style="display: none; position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 5px; color: white; z-index: 10000; font-weight: bold;"></div>
 
   <script src="/bookingspage/booking.js"></script>
+  <script src="../auth.js"></script>
+
 </body>
 </html>

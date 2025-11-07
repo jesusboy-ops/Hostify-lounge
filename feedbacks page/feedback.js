@@ -1,15 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_BASE = "https://hostify-app.vercel.app/api";
+  const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
   // === THEME TOGGLE ===
   const modeToggle = document.getElementById("modeToggle");
   const body = document.body;
-
   if (localStorage.getItem("theme") === "light") {
     body.classList.add("light-mode");
     if (modeToggle) modeToggle.textContent = "🔆";
   }
-
   modeToggle?.addEventListener("click", () => {
     body.classList.toggle("light-mode");
     const isLight = body.classList.contains("light-mode");
@@ -38,11 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // === STAR RATING ===
   const stars = document.querySelectorAll("#starContainer span");
   let selectedRating = 0;
-
   function updateStars(rating) {
     stars.forEach((star, idx) => star.classList.toggle("active", idx < rating));
   }
-
   stars.forEach(star => {
     const value = parseInt(star.dataset.value);
     star.addEventListener("click", () => { selectedRating = value; updateStars(selectedRating); });
@@ -65,7 +61,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function showThankYouMessage() {
     const existing = document.querySelector(".thank-you-popup");
     if (existing) existing.remove();
-
     const popup = document.createElement("div");
     popup.className = "thank-you-popup";
     popup.innerHTML = `
@@ -76,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
     document.body.appendChild(popup);
-
     setTimeout(() => popup.classList.add("show"), 50);
     setTimeout(() => popup.classList.remove("show"), 2500);
     setTimeout(() => popup.remove(), 3000);
@@ -127,12 +121,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const feedbackData = { ...tempFeedbackData, name, date: new Date().toISOString() };
 
     try {
-      // Include JWT if user is logged in
       const token = localStorage.getItem("authToken");
       const headers = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const res = await fetch(`${API_BASE}/feedback`, {
+      const res = await fetch(`${API_BASE}/feedback/post`, {
         method: "POST",
         headers,
         body: JSON.stringify(feedbackData),

@@ -1,8 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const API_BASE = "https://hostify-app.vercel.app";
+  const API_BASE = "https://hostify-app-nnod.vercel.app/api";
   const AUTH_ENDPOINTS = {
-    login: `${API_BASE}/auth/login`,
-    register: `${API_BASE}/api/users/register`,
+    login: `${API_BASE}/users/login`,
+    register: `${API_BASE}/users/register`,
+  };
+
+  const REPORT_ENDPOINTS = {
+    create: `${API_BASE}/reports/create`,
+    all: `${API_BASE}/reports`,
+    view: (id) => `${API_BASE}/reports/${id}`,
+    update: (id) => `${API_BASE}/reports/${id}`,
+    delete: (id) => `${API_BASE}/reports/${id}`,
   };
 
   const body = document.body;
@@ -195,8 +203,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // ====== REPORT FUNCTIONS ======
+  async function createReport(reportData) {
+    const { token } = getAuthData();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(REPORT_ENDPOINTS.create, { method: 'POST', headers, body: JSON.stringify(reportData) });
+    if (!res.ok) throw new Error('Failed to create report');
+    return res.json();
+  }
+
+  async function getAllReports() {
+    const { token } = getAuthData();
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(REPORT_ENDPOINTS.all, { headers });
+    if (!res.ok) throw new Error('Failed to fetch reports');
+    return res.json();
+  }
+
+  async function getReportById(id) {
+    const { token } = getAuthData();
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(REPORT_ENDPOINTS.view(id), { headers });
+    if (!res.ok) throw new Error('Failed to fetch report');
+    return res.json();
+  }
+
+  async function updateReport(id, updateData) {
+    const { token } = getAuthData();
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(REPORT_ENDPOINTS.update(id), { method: 'PUT', headers, body: JSON.stringify(updateData) });
+    if (!res.ok) throw new Error('Failed to update report');
+    return res.json();
+  }
+
+  async function deleteReport(id) {
+    const { token } = getAuthData();
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(REPORT_ENDPOINTS.delete(id), { method: 'DELETE', headers });
+    if (!res.ok) throw new Error('Failed to delete report');
+    return res.json();
+  }
+
   // ====== INIT ======
   updateAuthUI();
   window.openAuthModal = openAuthModal;
   window.handleLogout = handleLogout;
+  window.createReport = createReport;
+  window.getAllReports = getAllReports;
+  window.getReportById = getReportById;
+  window.updateReport = updateReport;
+  window.deleteReport = deleteReport;
 });

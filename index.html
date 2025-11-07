@@ -9,7 +9,96 @@
   <link rel="stylesheet" href="/auth-modal.css" />
 </head>
 <body>
+<style>
+   .auth-box {
+  width: 400px;
+  background: #1e1e1e;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
 
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 2px solid transparent;
+  transition: all 0.3s;
+}
+
+.tab.active {
+  color: white;
+  border-bottom: 2px solid #f39c12;
+}
+
+.auth-form {
+  display: none;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-form.active {
+  display: flex;
+}
+
+.auth-form input {
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  background: #333;
+  color: white;
+}
+
+.auth-btn {
+  background: #f39c12;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.auth-btn:hover {
+  background: #d88700;
+}
+
+.auth-side-image {
+  flex: 1;
+  height: 20%;
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .auth-container {
+    justify-content: space-around;
+  }
+  .auth-side-image {
+    display: block;
+  }
+  .auth-side-image img {
+    height: 100vh;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 0 0 0 0;
+  }
+}
+
+
+  </style>
+</style>
   <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">
@@ -85,67 +174,56 @@
     </div>
   </footer>
 
-  <!-- Auth Modal -->
+<!-- AUTH BUTTONS -->
+  <div id="authButtons">
+    <div class="auth-buttons">
+      <button onclick="openAuthModal('login')">Login</button>
+      <button onclick="openAuthModal('signup')">Sign Up</button>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL -->
   <div id="authModal" class="auth-modal">
-    <div class="auth-modal-content">
-      <button class="auth-close" id="authCloseBtn">&times;</button>
-      
-      <div class="auth-welcome">
-        <h2 class="auth-title">WELCOME TO HOSTIFY</h2>
-        <p class="auth-subtitle">Order now to enjoy a stress-free, time saving experience</p>
-      </div>
+    <button id="authCloseBtn">×</button>
 
-      <!-- Tabs -->
-      <div class="auth-tabs">
-        <button class="auth-tab active" data-tab="login">Login</button>
-        <button class="auth-tab" data-tab="signup">Sign up</button>
-      </div>
+    <div class="auth-tabs">
+      <span class="auth-tab active" data-tab="login">Login</span>
+      <span class="auth-tab" data-tab="signup">Sign Up</span>
+    </div>
 
-      <!-- Login Form -->
-      <form id="loginForm" class="auth-form active">
-        <div class="auth-input-group">
-          <span class="auth-icon">👤</span>
-          <input type="email" placeholder="Email" required autocomplete="email">
-        </div>
-        <div class="auth-input-group">
-          <span class="auth-icon">🔒</span>
-          <input type="password" placeholder="Password" required autocomplete="current-password">
-        </div>
-        <p class="auth-terms">By Signing in, you are agreeing to our privacy policy and lounge/bar policy</p>
-        <button type="submit" class="auth-submit-btn">Login</button>
-      </form>
+    <!-- LOGIN FORM -->
+    <form id="loginForm" class="auth-form active">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <label for="loginRole">Select Role:</label>
+      <select name="role" required>
+        <option value="">-- Choose Role --</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+        <option value="staff">Staff</option>
+      </select>
+      <button type="submit">Login</button>
+    </form>
 
-      <!-- Signup Form -->
-      <form id="signupForm" class="auth-form">
-        <div class="auth-input-group">
-          <span class="auth-icon">👤</span>
-          <input type="text" placeholder="Username" required autocomplete="name">
-        </div>
-        <div class="auth-input-group">
-          <span class="auth-icon">👤</span>
-          <input type="text" placeholder="name" required autocomplete="name">
-        </div>
-        <div class="auth-input-group">
-          <span class="auth-icon">✉️</span>
-          <input type="email" placeholder="Email" required autocomplete="email">
-        </div>
-        <div class="auth-input-group">
-          <span class="auth-icon">📞</span>
-          <input type="tel" placeholder="tel" required autocomplete="email">
-        </div>
-        <div class="auth-input-group">
-          <span class="auth-icon">🔒</span>
-          <input type="password" placeholder="Password" required autocomplete="new-password">
-        </div>
-        <select id="userRole" name="role" required>
-          <option value="">Select Role</option>
-          <option value="customer">user</option>
-          <option value="admin">Admin</option>
-          <option value="staff">Staff</option>
-        </select>
-        <p class="auth-terms">By Signing up, you are agreeing to our privacy policy and lounge/bar policy</p>
-        <button type="submit" class="auth-submit-btn">Sign up</button>
-      </form>
+    <!-- SIGNUP FORM -->
+    <form id="signupForm" class="auth-form">
+      <input type="text" name="name" placeholder="Full Name" required />
+      <input type="text" name="username" placeholder="Username" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="text" name="phone" placeholder="Phone Number" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <label for="signupRole">Select Role:</label>
+      <select name="role" required>
+        <option value="">-- Choose Role --</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+        <option value="staff">Staff</option>
+      </select>
+      <button type="submit">Sign Up</button>
+    </form>
+  </div>
+
+
 
       <div class="auth-brand">Hostify</div>
     </div>
