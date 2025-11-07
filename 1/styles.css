@@ -144,8 +144,8 @@ img {
   display: flex;
   list-style: none;
   gap: 35px;
-  font-size: 16px;
-  font-weight: 400;
+  font-size: 20px;
+  font-weight: 600;
 }
 .nav-links a {
   text-decoration: none;
