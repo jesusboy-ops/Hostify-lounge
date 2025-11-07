@@ -10,90 +10,170 @@
 </head>
 <body>
 <style>
-   .auth-box {
+ /* === OVERLAY === */
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+}
+
+.auth-modal.active {
+  display: flex;
+}
+
+/* === MAIN BOX === */
+.auth-box {
   width: 400px;
   background: #1e1e1e;
-  padding: 30px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  padding: 35px;
+  border-radius: 14px;
+  box-shadow: 0 0 30px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* === CLOSE BUTTON === */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 18px;
+  font-size: 22px;
+  color: #aaa;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.close-btn:hover {
+  color: #f39c12;
+}
+
+/* === BRAND + TABS === */
+.auth-brand {
+  font-size: 28px;
+  font-weight: 700;
+  color: #f39c12;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .tabs {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
+  justify-content: center;
+  border-bottom: 1px solid #333;
+  margin-bottom: 25px;
 }
-
 .tab {
   flex: 1;
+  text-align: center;
   background: transparent;
   border: none;
+  padding: 12px;
   color: #aaa;
   font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  padding: 10px;
+  transition: 0.3s;
   border-bottom: 2px solid transparent;
-  transition: all 0.3s;
 }
-
 .tab.active {
-  color: white;
-  border-bottom: 2px solid #f39c12;
+  color: #fff;
+  border-bottom-color: #f39c12;
 }
 
+/* === FORM === */
 .auth-form {
   display: none;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
 }
-
 .auth-form.active {
   display: flex;
 }
-
-.auth-form input {
+.auth-form input,
+.auth-form select {
   padding: 12px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   outline: none;
-  background: #333;
+  background: #2b2b2b;
   color: white;
+  font-size: 15px;
 }
-
+.auth-form select {
+  cursor: pointer;
+}
 .auth-btn {
   background: #f39c12;
   border: none;
   padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
+  border-radius: 8px;
   color: white;
   font-weight: 600;
+  cursor: pointer;
   transition: background 0.3s;
 }
-
 .auth-btn:hover {
   background: #d88700;
 }
 
+/* === SIDE IMAGE === */
 .auth-side-image {
-  flex: 1;
-  height: 20%;
   display: none;
 }
-
 @media (min-width: 900px) {
-  .auth-container {
-    justify-content: space-around;
+  .auth-modal {
+    justify-content: center;
+  }
+  .auth-box {
+    width: 420px;
+    margin-right: 20px;
   }
   .auth-side-image {
     display: block;
+    height: 100%;
   }
   .auth-side-image img {
+    width: 400px;
     height: 100vh;
-    width: 100%;
     object-fit: cover;
-    border-radius: 0 0 0 0;
+    border-radius: 12px;
   }
+}
+
+/* === BUTTONS OUTSIDE MODAL === */
+.auth-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.auth-buttons button {
+  background: #f39c12;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+.auth-buttons button:hover {
+  background: #d88700;
 }
 
 
@@ -175,34 +255,35 @@
   </footer>
 
 <!-- AUTH BUTTONS -->
-  <div id="authButtons">
-    <div class="auth-buttons">
-      <button onclick="openAuthModal('login')">Login</button>
-      <button onclick="openAuthModal('signup')">Sign Up</button>
-    </div>
-  </div>
+<div id="authButtons" class="auth-buttons">
+  <button onclick="openAuthModal('login')">Login</button>
+  <button onclick="openAuthModal('signup')">Sign Up</button>
+</div>
 
-  <!-- AUTH MODAL -->
-  <div id="authModal" class="auth-modal">
-    <button id="authCloseBtn">×</button>
+<!-- AUTH MODAL -->
+<div id="authModal" class="auth-modal">
+  <div class="auth-box">
+    <button id="authCloseBtn" class="close-btn">×</button>
 
-    <div class="auth-tabs">
-      <span class="auth-tab active" data-tab="login">Login</span>
-      <span class="auth-tab" data-tab="signup">Sign Up</span>
+    <div class="auth-header">
+      <div class="auth-brand">Hostify</div>
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Login</button>
+        <button class="tab" data-tab="signup">Sign Up</button>
+      </div>
     </div>
 
     <!-- LOGIN FORM -->
     <form id="loginForm" class="auth-form active">
       <input type="email" name="email" placeholder="Email" required />
       <input type="password" name="password" placeholder="Password" required />
-      <label for="loginRole">Select Role:</label>
       <select name="role" required>
-        <option value="">-- Choose Role --</option>
+        <option value="">-- Select Role --</option>
         <option value="user">User</option>
         <option value="admin">Admin</option>
         <option value="staff">Staff</option>
       </select>
-      <button type="submit">Login</button>
+      <button type="submit" class="auth-btn">Login</button>
     </form>
 
     <!-- SIGNUP FORM -->
@@ -212,23 +293,51 @@
       <input type="email" name="email" placeholder="Email" required />
       <input type="text" name="phone" placeholder="Phone Number" required />
       <input type="password" name="password" placeholder="Password" required />
-      <label for="signupRole">Select Role:</label>
       <select name="role" required>
-        <option value="">-- Choose Role --</option>
+        <option value="">-- Select Role --</option>
         <option value="user">User</option>
         <option value="admin">Admin</option>
         <option value="staff">Staff</option>
       </select>
-      <button type="submit">Sign Up</button>
+      <button type="submit" class="auth-btn">Sign Up</button>
     </form>
   </div>
 
 
+  </div>
+</div>
 
-      <div class="auth-brand">Hostify</div>
     </div>
   </div>
+<script>
+  // AUTH MODAL CONTROL
+const authModal = document.getElementById("authModal");
+const closeBtn = document.getElementById("authCloseBtn");
+const tabs = document.querySelectorAll(".tab");
+const forms = document.querySelectorAll(".auth-form");
 
+function openAuthModal(tab) {
+  authModal.classList.add("active");
+  switchTab(tab);
+}
+
+closeBtn.addEventListener("click", () => {
+  authModal.classList.remove("active");
+});
+
+function switchTab(tabName) {
+  tabs.forEach(t => t.classList.remove("active"));
+  forms.forEach(f => f.classList.remove("active"));
+
+  document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add("active");
+  document.getElementById(`${tabName}Form`).classList.add("active");
+}
+
+tabs.forEach(t => {
+  t.addEventListener("click", () => switchTab(t.dataset.tab));
+});
+
+</script>
   <script src="/1/script.js"></script>
   <script src="../auth.js"></script>
 
