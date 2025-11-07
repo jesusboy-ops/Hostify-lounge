@@ -7,7 +7,235 @@
   <link rel="stylesheet" href="/menu/menu.css">
 </head>
 <body>
+<style>
+ /* === Checkout Modal === */
+.checkout-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
 
+.checkout-modal.active {
+  display: flex;
+}
+
+.checkout-content {
+  background: #3e2a19;
+  color: #fff9f0;
+  width: 90%;
+  max-width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  padding: 25px 20px;
+  animation: slideUp 0.3s ease-in-out;
+}
+
+.checkout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #a67c52;
+  padding-bottom: 8px;
+}
+
+.checkout-header h2 {
+  font-size: 1.4rem;
+  letter-spacing: 0.5px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #f4c38b;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.close-btn:hover {
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.cart-items {
+  max-height: 200px;
+  overflow-y: auto;
+  margin: 20px 0;
+  padding-right: 5px;
+}
+
+.cart-items::-webkit-scrollbar {
+  width: 5px;
+}
+.cart-items::-webkit-scrollbar-thumb {
+  background: #a67c52;
+  border-radius: 10px;
+}
+
+.checkout-total {
+  border-top: 1px solid #a67c52;
+  padding-top: 12px;
+  margin-bottom: 15px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.checkout-btn {
+  width: 100%;
+  background: #f4c38b;
+  color: #3e2a19;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.checkout-btn:hover {
+  background: #f5d3a3;
+  transform: translateY(-2px);
+}
+
+/* === Checkout Form === */
+.checkout-form {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkout-form.hidden {
+  display: none;
+}
+
+.form-title {
+  text-align: center;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #f5d3a3;
+}
+
+.checkout-form input {
+  background: #fff9f0;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  color: #3e2a19;
+  font-size: 1rem;
+}
+/* === Cart Item Buttons === */
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #4a3221;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.cart-item-info {
+  flex: 1;
+}
+
+.cart-item h4 {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.cart-item p {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.cart-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qty-btn {
+  background: #f4c38b;
+  border: none;
+  color: #3e2a19;
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.qty-btn:hover {
+  background: #f5d3a3;
+  transform: scale(1.05);
+}
+
+.remove-btn {
+  background: none;
+  border: 1px solid #f4c38b;
+  color: #f4c38b;
+  padding: 4px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.25s ease;
+}
+.cart-count
+.remove-btn:hover {
+  background: #f4c38b;
+  color: #3e2a19;
+  transform: scale(1.05);
+}
+
+.submit-order-btn {
+  background: #f4c38b;
+  border: none;
+  color: #3e2a19;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit-order-btn:hover {
+  background: #f5d3a3;
+}
+
+.cart-count {
+
+  font-size: 19px;
+  padding-left: 5px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+/* === Animations === */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+</style>
   
   <nav class="navbar">
     <div class="logo">
@@ -16,9 +244,9 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="../index.html">Home</a></li>
       <li><a href="/bookingspage/booking.html">Book</a></li>
-      <li><a href="/menu/menu.html">Menu</a></li>
+     
       <li><a href="/feedbacks page/feedback.html">Feedback</a></li>
-      <li><a href="/staffpage/staff.html">Staff</a></li>
+     
     </ul>
     <div class="nav-icons">
       <button class="theme-toggle" id="themeToggle">🌙</button>
@@ -54,32 +282,36 @@
 
   
   <div class="checkout-modal" id="checkoutModal">
-    <div class="checkout-content">
-      <div class="checkout-header">
-        <h2>Your Cart</h2>
-        <button class="close-btn" id="checkoutClose">&times;</button>
-      </div>
-
-      <div class="cart-items" id="cartItems">
-        
-      </div>
-
-      <div class="checkout-total">
-        <div class="total-row">
-          <span>Total:</span>
-          <span id="totalPrice">₦0</span>
-        </div>
-        <button class="checkout-btn" id="proceedBtn">Proceed to Checkout</button>
-      </div>
-
-      
-      <form id="checkoutForm" class="checkout-form hidden">
-        <input type="text" id="customerName" placeholder="Your Name" required>
-        <input type="text" id="customerContact" placeholder="WhatsApp / Phone" required>
-        <button type="submit">Submit Order</button>
-      </form>
+  <div class="checkout-content">
+    <div class="checkout-header">
+      <h2>Your Cart</h2>
+      <button class="close-btn" id="checkoutClose">&times;</button>
     </div>
+
+    <div class="cart-items" id="cartItems">
+      <!-- Cart items dynamically added here -->
+    </div>
+
+    <div class="checkout-total">
+      <div class="total-row">
+        <span>Total:</span>
+        <span id="totalPrice">₦0</span>
+      </div>
+      <button class="checkout-btn" id="proceedBtn">Proceed to Checkout</button>
+    </div>
+
+    <form id="checkoutForm" class="checkout-form hidden">
+      <h3 class="form-title">Complete Your Order</h3>
+      <input type="text" id="customerName" placeholder="Full Name" required>
+      <input type="text" id="customerContact" placeholder="WhatsApp or Phone Number" required>
+      <button type="submit" class="submit-order-btn">Submit Order</button>
+    </form>
   </div>
+</div>
+<div class="cart-item">
+  <div class="cart-item-info">
+
+</div>
 
   
   <footer>

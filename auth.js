@@ -1,4 +1,4 @@
-// === API CONFIG ===
+
 const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 const AUTH_ENDPOINTS = {
   login: `${API_BASE}/users/login`,
@@ -7,8 +7,8 @@ const AUTH_ENDPOINTS = {
   userById: id => `${API_BASE}/users/${id}`
 };
 
-// === MESSAGE UTILITY ===
-function showMessage(msg, type = "info", duration = 3000) {
+
+function showMessage(msg, type = "info", duration = 5000) {
   let container = document.getElementById("messageContainer");
   if (!container) {
     container = document.createElement("div");
@@ -32,23 +32,31 @@ function showMessage(msg, type = "info", duration = 3000) {
 
   container.textContent = msg;
 
-  switch(type) {
-    case "success": container.style.background = "#28a745"; break;
-    case "error": container.style.background = "#dc3545"; break;
-    default: container.style.background = "#007bff";
+  switch (type) {
+    case "success":
+      container.style.background = "#28a745";
+      break;
+    case "error":
+      container.style.background = "#dc3545";
+      break;
+    default:
+      container.style.background = "#007bff";
   }
 
   container.style.opacity = "1";
   setTimeout(() => (container.style.opacity = "0"), duration);
 }
 
-// === JWT UTILITY ===
+
 function decodeJWT(token) {
   try {
     const base64Url = token.split(".")[1];
     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
     const jsonPayload = decodeURIComponent(
-      atob(base64).split("").map(c => "%" + ("00"+c.charCodeAt(0).toString(16)).slice(-2)).join("")
+      atob(base64)
+        .split("")
+        .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
     );
     return JSON.parse(jsonPayload);
   } catch (err) {
@@ -57,7 +65,7 @@ function decodeJWT(token) {
   }
 }
 
-// === LOCAL STORAGE UTILITY ===
+
 function saveAuthData(token, userData) {
   localStorage.setItem("authToken", token);
   localStorage.setItem("userData", JSON.stringify(userData));
@@ -76,7 +84,7 @@ function clearAuthData() {
   localStorage.removeItem("isReturningUser");
 }
 
-// === AUTH MODAL UTILITY ===
+
 const authModal = document.getElementById("authModal");
 const authCloseBtn = document.getElementById("authCloseBtn");
 const authTabs = document.querySelectorAll(".auth-tab");
@@ -104,8 +112,12 @@ function closeAuthModal() {
 }
 
 authCloseBtn?.addEventListener("click", closeAuthModal);
-authModal?.addEventListener("click", e => { if (e.target === authModal) closeAuthModal(); });
-authTabs?.forEach(tab => tab.addEventListener("click", () => switchTab(tab.dataset.tab)));
+authModal?.addEventListener("click", e => {
+  if (e.target === authModal) closeAuthModal();
+});
+authTabs?.forEach(tab =>
+  tab.addEventListener("click", () => switchTab(tab.dataset.tab))
+);
 
 function switchTab(tabName) {
   authTabs?.forEach(t => t.classList.remove("active"));
@@ -119,13 +131,12 @@ function switchTab(tabName) {
   }
 }
 
-// === LOGIN HANDLER (ROLE-BASED) ===
 loginForm?.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const email = loginForm.querySelector('input[name="email"]')?.value.trim();
-  const password = loginForm.querySelector('input[name="password"]')?.value.trim();
-  const role = loginForm.querySelector('select[name="role"]')?.value;
+  const email = loginForm.querySelector('input[name="email"]').value.trim();
+  const password = loginForm.querySelector('input[name="password"]').value.trim();
+  const role = loginForm.querySelector('select[name="role"]').value;
 
   if (!email || !password || !role) {
     showMessage("Please fill in all fields!", "error");
@@ -149,40 +160,33 @@ loginForm?.addEventListener("submit", async e => {
     closeAuthModal();
     updateAuthUI();
 
-    // Welcome message
-    const loginMessage = document.getElementById("loginMessage");
-    if (loginMessage) {
-      loginMessage.innerHTML = `
-        Welcome <span style="color:#e9d368">${decoded.username || "User"}</span>!<br>
-        Role: <strong style="color:#4b352a">${decoded.role}</strong>
-      `;
-      loginMessage.style.display = "block";
-    }
+    showMessage(`Welcome ${decoded.username || "User"}!`, "success");
 
-    // Redirect based on role
     setTimeout(() => {
       if (decoded.role === "admin") window.location.href = "/staffpage/staffdashboard.html";
       else window.location.href = "/index.html";
-    }, 1500);
-
+    }, 1200);
   } catch (err) {
     console.error("Login error:", err);
     showMessage(err.message || "Login failed. Please try again.", "error");
   }
 });
 
-// === SIGNUP HANDLER (UNCHANGED) ===
+
 signupForm?.addEventListener("submit", async e => {
   e.preventDefault();
 
-  const name     = signupForm.querySelector('input[name="name"]')?.value.trim();
-  const username = signupForm.querySelector('input[name="username"]')?.value.trim();
-  const email    = signupForm.querySelector('input[name="email"]')?.value.trim();
-  const phone    = signupForm.querySelector('input[name="phone"]')?.value.trim();
-  const password = signupForm.querySelector('input[name="password"]')?.value.trim();
-  const role     = signupForm.querySelector('select[name="role"]')?.value || "user";
+  const name = signupForm.querySelector('input[name="name"]').value.trim();
+  const username = signupForm.querySelector('input[name="username"]').value.trim();
+  const email = signupForm.querySelector('input[name="email"]').value.trim();
+  const phone = signupForm.querySelector('input[name="phone"]').value.trim();
+  const password = signupForm.querySelector('input[name="password"]').value.trim();
+  const role = signupForm.querySelector('select[name="role"]').value;
 
-  if (!name || !username || !email || !phone || !password) return showMessage("Please fill in all fields!", "error");
+  if (!name || !username || !email || !phone || !password) {
+    showMessage("Please fill in all fields!", "error");
+    return;
+  }
 
   try {
     const res = await fetch(AUTH_ENDPOINTS.register, {
@@ -195,14 +199,11 @@ signupForm?.addEventListener("submit", async e => {
     if (!res.ok) throw new Error(data.message || "Signup failed");
 
     const decoded = decodeJWT(data.token);
-    if (!decoded) throw new Error("Invalid token received");
-
     saveAuthData(data.token, decoded);
     closeAuthModal();
     updateAuthUI();
-    showMessage(`Welcome, ${decoded.username || username}! Role: ${decoded.role || role}`, "success");
-    setTimeout(() => { window.location.href = "/index.html"; }, 1000);
-
+    showMessage(`Welcome, ${decoded.username || username}!`, "success");
+    setTimeout(() => (window.location.href = "/index.html"), 1000);
   } catch (err) {
     console.error("Signup error:", err);
     showMessage(err.message || "Signup failed. Please try again.", "error");
@@ -216,7 +217,7 @@ function handleLogout() {
   showMessage("You have been logged out successfully!", "success");
 }
 
-// === UPDATE UI ===
+
 function updateAuthUI() {
   const { token, user } = getAuthData();
   const authButtonsContainer = document.getElementById("authButtons");
@@ -226,7 +227,9 @@ function updateAuthUI() {
     const isReturning = localStorage.getItem("isReturningUser") === "true";
     authButtonsContainer.innerHTML = `
       <div class="user-greeting">
-        <span>${isReturning ? "Welcome back" : "Welcome"}, ${user.username || "User"}!</span>
+        <span>${isReturning ? "Welcome back" : "Welcome"}, ${
+      user.username || "User"
+    }!</span>
         <span>Role: ${user.role || "user"}</span>
         <button class="logout-btn" onclick="handleLogout()">Logout</button>
       </div>
@@ -241,20 +244,8 @@ function updateAuthUI() {
   }
 }
 
-// === REQUIRE AUTH CHECK ===
-function requireAuth() {
-  const { token, user } = getAuthData();
-  if (!token || !user) {
-    openAuthModal("login", "You must be signed in to continue!");
-    return false;
-  }
-  return true;
-}
-
-// === INITIALIZE ===
 document.addEventListener("DOMContentLoaded", updateAuthUI);
 
-// === EXPORT FOR GLOBAL ACCESS ===
 window.openAuthModal = openAuthModal;
 window.handleLogout = handleLogout;
-window.requireAuth = requireAuth;
+window.requireAuth = () => !!getAuthData().token;

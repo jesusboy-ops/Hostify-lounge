@@ -1,123 +1,128 @@
-// === API CONFIG ===
-const BOOKING_API = "https://hostify-app-nnod.vercel.app/api/bookings";
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+menuToggle.addEventListener("click", () => {
+  navLinks.classList.toggle("active");
+  menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
+});
 
-// === MESSAGE UTILITY ===
-function showMessage(msg, type = "info", duration = 3000) {
-  let container = document.getElementById("messageContainer");
-  if (!container) {
-    container = document.createElement("div");
-    container.id = "messageContainer";
-    Object.assign(container.style, {
-      position: "fixed",
-      top: "20px",
-      right: "20px",
-      padding: "12px 20px",
-      borderRadius: "8px",
-      zIndex: 10000,
-      color: "#fff",
-      fontWeight: "600",
-      fontFamily: "sans-serif",
-      opacity: "0",
-      transition: "opacity 0.3s",
-    });
-    document.body.appendChild(container);
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Booking script initialized ✅");
+
+  const BOOKING_API = "https://hostify-app-nnod.vercel.app/api/bookings";
+
+  
+  const bookingForm = document.getElementById("bookingForm");
+  const overlay = document.getElementById("bookingOverlay");
+  const messageBox = document.getElementById("messageContainer");
+
+  function showMessage(msg, type = "info") {
+    messageBox.style.display = "block";
+    messageBox.textContent = msg;
+    messageBox.style.background = type === "error" ? "#e74c3c" : "#27ae60";
+    messageBox.style.opacity = "1";
+
+    setTimeout(() => {
+      messageBox.style.opacity = "0";
+      setTimeout(() => (messageBox.style.display = "none"), 500);
+    }, 4000);
   }
 
-  container.textContent = msg;
 
-  switch(type) {
-    case "success": container.style.background = "#28a745"; break;
-    case "error": container.style.background = "#dc3545"; break;
-    default: container.style.background = "#007bff";
-  }
+  overlay.innerHTML = `
+    <div style="color: white; text-align: center;">
+      <div style="
+        border: 6px solid rgba(255,255,255,0.3);
+        border-top: 6px solid white;
+        border-radius: 50%;
+        width: 50px; height: 50px;
+        margin: auto;
+        animation: spin 1s linear infinite;
+      "></div>
+      <p style="margin-top: 10px;">Processing your booking...</p>
+    </div>
+  `;
+  const spinnerStyle = document.createElement("style");
+  spinnerStyle.innerHTML = `
+    @keyframes spin { to { transform: rotate(360deg); } }
+  `;
+  document.head.appendChild(spinnerStyle);
 
-  container.style.opacity = "1";
-  setTimeout(() => container.style.opacity = "0", duration);
-}
+  
+  bookingForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    console.log("Submit button clicked 🧾");
 
-// === OVERLAY UTILITY ===
-const overlay = document.getElementById("bookingOverlay");
-function showOverlay() { overlay.style.display = "flex"; }
-function hideOverlay() { overlay.style.display = "none"; }
+    overlay.style.display = "flex";
 
-// === GET CURRENT USER DATA FROM LOCALSTORAGE ===
-function getCurrentUser() {
-  return JSON.parse(localStorage.getItem("userData") || "{}");
-}
+ 
+    const payload = {
+      customerName: document.getElementById("fullName").value.trim(),
+      phoneNum: document.getElementById("phone").value.trim(),
+      email: document.getElementById("email")
+        ? document.getElementById("email").value.trim()
+        : "guest@example.com", // fallback if email input missing
+      space: document.getElementById("space").value,
+      date: document.getElementById("date").value,
+      time: document.getElementById("time").value,
+      people: Number(document.getElementById("guests").value),
+      specialRequests: document.getElementById("specialRequests").value.trim()
+    };
 
-// === BOOKING FORM HANDLER ===
-const bookingForm = document.getElementById("bookingForm");
-
-bookingForm?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  console.log("Booking form submitted!");
-
-  const fullName = document.getElementById("fullName")?.value.trim();
-  const phone = document.getElementById("phone")?.value.trim();
-  const space = document.getElementById("space")?.value;
-  const date = document.getElementById("date")?.value;
-  const time = document.getElementById("time")?.value;
-  const people = document.getElementById("guests")?.value;
-  const specialRequests = document.getElementById("specialRequests")?.value.trim();
-
-  const user = getCurrentUser();
-  const userId = user?._id;
-  const email = user?.email;
-
-  if (!userId || !email) {
-    return showMessage("You must be logged in to book a table.", "error");
-  }
-
-  if (!fullName || !phone || !space || !date || !time || !people) {
-    return showMessage("Please fill in all required fields.", "error");
-  }
-
-  const payload = {
-    user: userId,
-    email,
-    customerName: fullName,
-    phoneNum: phone,
-    space,
-    date,
-    time,
-    people: Number(people),
-    ...(specialRequests && { specialRequests })
-  };
-
-  console.log("Booking payload:", payload);
-
-  try {
-    showOverlay();
-
-    const response = await fetch(BOOKING_API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("authToken") || ""}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const data = await response.json();
-    hideOverlay();
-
-    // Always log the backend response
-    console.log("Backend response:", data, "Status:", response.status);
-
-    if (!response.ok) {
-      // Show backend error message directly
-      showMessage(data.message || "Booking failed", "error");
-      return;
+    // Validate required fields
+    if (
+      !payload.customerName ||
+      !payload.phoneNum ||
+      !payload.email ||
+      !payload.space ||
+      !payload.date ||
+      !payload.time ||
+      !payload.people
+    ) {
+      overlay.style.display = "none";
+      return showMessage("Please fill in all required fields.", "error");
     }
 
-    // Success
-    console.log("Booking successful:", data);
-    showMessage("Booking successful! 🎉", "success");
-    bookingForm.reset();
+   
+    const token = localStorage.getItem("authToken");
 
-  } catch (err) {
-    hideOverlay();
-    console.error("Booking error (network or parsing):", err);
-    showMessage(err.message || "Booking failed", "error");
-  }
+    try {
+      const res = await fetch(BOOKING_API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const text = await res.text();
+      console.log("Raw response from API:", text);
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { message: text };
+      }
+
+      overlay.style.display = "none";
+
+      if (!res.ok) {
+        console.error("❌ Booking failed:", data);
+        return showMessage(
+          data.message || data.errors?.[0]?.msg || "Booking failed. Try again later.",
+          "error"
+        );
+      }
+
+      console.log("✅ Booking success:", data);
+      showMessage("✅ Booking successful! 🎉", "success");
+      bookingForm.reset();
+
+    } catch (err) {
+      overlay.style.display = "none";
+      console.error("⚠️ Network or code error:", err);
+      showMessage("⚠️ Network error. Please try again.", "error");
+    }
+  });
 });

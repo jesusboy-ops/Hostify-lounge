@@ -10,7 +10,7 @@
 </head>
 <body>
 <style>
- /* === OVERLAY === */
+
 .auth-modal {
   position: fixed;
   top: 0;
@@ -254,12 +254,18 @@
     </div>
   </footer>
 
+<<<<<<< HEAD
 <!-- AUTH BUTTONS -->
 <div id="authButtons" class="auth-buttons">
   <button onclick="openAuthModal('login')">Login</button>
   <button onclick="openAuthModal('signup')">Sign Up</button>
 </div>
 
+=======
+
+
+
+>>>>>>> 40d2c34 (modified api and ui)
 <!-- AUTH MODAL -->
 <div id="authModal" class="auth-modal">
   <div class="auth-box">
@@ -268,9 +274,53 @@
     <div class="auth-header">
       <div class="auth-brand">Hostify</div>
       <div class="tabs">
+<<<<<<< HEAD
         <button class="tab active" data-tab="login">Login</button>
         <button class="tab" data-tab="signup">Sign Up</button>
       </div>
+=======
+        <button class="auth-tab active" data-tab="login">Login</button>
+        <button class="auth-tab" data-tab="signup">Sign Up</button>
+      </div>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" class="auth-form active">
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <select name="role" required>
+        <option value="">-- Select Role --</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+        <option value="staff">Staff</option>
+      </select>
+      <button type="submit" class="auth-btn">Login</button>
+    </form>
+
+    <!-- SIGNUP FORM -->
+    <form id="signupForm" class="auth-form">
+      <input type="text" name="name" placeholder="Full Name" required />
+      <input type="text" name="username" placeholder="Username" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="text" name="phone" placeholder="Phone Number" required />
+      <input type="password" name="password" placeholder="Password" required />
+      <select name="role" required>
+        <option value="">-- Select Role --</option>
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+        <option value="staff">Staff</option>
+      </select>
+      <button type="submit" class="auth-btn">Sign Up</button>
+    </form>
+  </div>
+</div>
+
+
+
+ 
+</div>
+
+>>>>>>> 40d2c34 (modified api and ui)
     </div>
 
     <!-- LOGIN FORM -->

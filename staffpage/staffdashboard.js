@@ -9,7 +9,7 @@ function getAuthToken() {
 function checkAuth() {
   const token = getAuthToken();
   if (!token) {
-    window.location.href = "../auth.html";
+    window.location.href = "../auth.js";
     return null;
   }
   return token;

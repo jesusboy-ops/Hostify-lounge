@@ -1,261 +1,195 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const API_BASE = "https://hostify-app-nnod.vercel.app/api";
-  const AUTH_ENDPOINTS = {
-    login: `${API_BASE}/users/login`,
-    register: `${API_BASE}/users/register`,
-  };
+// === API CONFIG ===
+const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
-  const REPORT_ENDPOINTS = {
-    create: `${API_BASE}/reports/create`,
-    all: `${API_BASE}/reports`,
-    view: (id) => `${API_BASE}/reports/${id}`,
-    update: (id) => `${API_BASE}/reports/${id}`,
-    delete: (id) => `${API_BASE}/reports/${id}`,
-  };
+// === AUTH HELPERS ===
+function getAuthToken() {
+  return localStorage.getItem("authToken");
+}
 
-  const body = document.body;
+function checkAuth() {
+  const token = getAuthToken();
+  if (!token) {
+    window.location.href = "../auth.js";
+    return null;
+  }
+  return token;
+}
 
-  // ====== THEME TOGGLE ======
-  const themeToggle = document.getElementById('themeToggle');
-  if (themeToggle) {
-    if (localStorage.getItem('theme') === 'dark') {
-      body.classList.add('dark-mode');
-      themeToggle.textContent = '🔆';
-    }
+// === GENERIC API REQUEST ===
+async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
+  try {
+    const headers = { "Content-Type": "application/json" };
+    if (auth) headers["Authorization"] = `Bearer ${getAuthToken()}`;
 
-    themeToggle.addEventListener('click', () => {
-      body.classList.toggle('dark-mode');
-      const isDark = body.classList.contains('dark-mode');
-      themeToggle.textContent = isDark ? '🔆' : '🌙';
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    const res = await fetch(`${API_BASE}/${endpoint}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : null,
     });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || `Request failed: ${res.status}`);
+    return data;
+  } catch (err) {
+    console.error(err);
+    alert(`Server error: ${err.message}`);
+    return null;
+  }
+}
+
+// === BOOKINGS HANDLERS ===
+async function renderBookings() {
+  const tbody = document.getElementById("bookingsTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
+
+  const res = await apiRequest("bookings/all") || {};
+  const bookings = res.bookings || [];
+
+  if (!bookings.length) {
+    tbody.innerHTML = '<tr><td colspan="6">No bookings found</td></tr>';
+    return;
   }
 
-  // ====== MOBILE MENU TOGGLE ======
-  const menuToggle = document.querySelector('.menu-toggle');
-  const navLinks = document.querySelector('.nav-links');
-  menuToggle?.addEventListener('click', () => {
-    navLinks?.classList.toggle('active');
-    menuToggle.textContent = navLinks?.classList.contains('active') ? '✕' : '☰';
-  });
+  tbody.innerHTML = bookings.map(b => `
+    <tr>
+      <td>${b.customerName || '-'}</td>
+      <td>${b.date || '-'}</td>
+      <td>${b.time || '-'}</td>
+      <td>${b.space || '-'}</td>
+      <td>${b.status || 'Pending'}</td>
+      <td>
+        <button class="action-btn approve" onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
+        <button class="action-btn reject" onclick="updateBookingStatus('${b._id}','Cancelled')">❌</button>
+        <button class="action-btn delete" onclick="deleteBooking('${b._id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
 
-  // ====== AUTH MODAL CONTROLS ======
-  const authModal = document.getElementById('authModal');
-  const authCloseBtn = document.getElementById('authCloseBtn');
-  const authTabs = document.querySelectorAll('.auth-tab');
-  const loginForm = document.getElementById('loginForm');
-  const signupForm = document.getElementById('signupForm');
+async function updateBookingStatus(id, status) {
+  if (!confirm(`Change booking status to "${status}"?`)) return;
+  await apiRequest(`bookings/update/${id}`, "PUT", { status });
+  renderBookings();
+}
 
-  function openAuthModal(tab = 'login') {
-    authModal?.classList.add('active');
-    switchTab(tab);
+async function deleteBooking(id) {
+  if (!confirm("Delete this booking?")) return;
+  await apiRequest(`bookings/delete/${id}`, "DELETE");
+  renderBookings();
+}
+
+// === BOOKING FORM SUBMISSION ===
+const bookingForm = document.getElementById("bookingForm");
+bookingForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const token = checkAuth();
+  if (!token) return;
+
+  const customerName = document.getElementById("fullName")?.value.trim();
+  const phoneNum = document.getElementById("phone")?.value.trim();
+  const space = document.getElementById("space")?.value.trim() || "Default";
+  const date = document.getElementById("date")?.value;
+  const time = document.getElementById("time")?.value;
+  const people = Number(document.getElementById("guests")?.value) || 1;
+
+  if (!customerName || !phoneNum || !date || !time) {
+    alert("Please fill in all required fields");
+    return;
   }
 
-  function closeAuthModal() {
-    authModal?.classList.remove('active');
+  const bookingData = { customerName, phoneNum, space, date, time, people };
+
+  try {
+    const res = await apiRequest("bookings/book", "POST", bookingData);
+    alert(res.message || "Booking submitted!");
+    bookingForm.reset();
+    renderBookings();
+  } catch (err) {
+    console.error("Booking error:", err);
+    alert("Error submitting booking: " + err.message);
   }
-
-  authCloseBtn?.addEventListener('click', closeAuthModal);
-  authModal?.addEventListener('click', (e) => {
-    if (e.target === authModal) closeAuthModal();
-  });
-
-  authTabs.forEach(tab => {
-    tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-  });
-
-  function switchTab(tabName) {
-    authTabs.forEach(t => t.classList.remove('active'));
-    document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
-    if (tabName === 'login') {
-      loginForm?.classList.add('active');
-      signupForm?.classList.remove('active');
-    } else {
-      signupForm?.classList.add('active');
-      loginForm?.classList.remove('active');
-    }
-  }
-
-  // ====== JWT HELPERS ======
-  function decodeJWT(token) {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
-        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      ).join('')));
-    } catch { return null; }
-  }
-
-  function saveAuthData(token, userData) {
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('userData', JSON.stringify(userData));
-  }
-
-  function getAuthData() {
-    const token = localStorage.getItem('authToken');
-    const user = localStorage.getItem('userData');
-    return { token, user: user ? JSON.parse(user) : null };
-  }
-
-  function clearAuthData() {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('userData');
-    localStorage.removeItem('isReturningUser');
-  }
-
-  // ====== LOGIN HANDLER ======
-  loginForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = loginForm.querySelector('input[type="email"]').value.trim();
-    const password = loginForm.querySelector('input[type="password"]').value.trim();
-    if (!email || !password) return alert('Please fill in all fields!');
-
-    try {
-      const res = await fetch(AUTH_ENDPOINTS.login, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || 'Login failed');
-      if (!data.token) throw new Error('No token received');
-
-      const decoded = decodeJWT(data.token);
-      if (!decoded) throw new Error('Invalid token');
-      saveAuthData(data.token, decoded);
-      localStorage.setItem('isReturningUser', 'true');
-
-      if (decoded.role === 'staff' || decoded.role === 'admin') {
-        alert(`Welcome back, ${decoded.username || 'Staff'}!`);
-        window.location.href = '/staffpage/staffdashboard.html';
-      } else {
-        alert(`Welcome back, ${decoded.username || 'User'}!`);
-        closeAuthModal();
-        updateAuthUI();
-      }
-    } catch (err) {
-      console.error(err);
-      alert(err.message || 'Login failed. Try again.');
-    }
-  });
-
-  // ====== SIGNUP HANDLER ======
-  signupForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = signupForm.querySelector('input[type="text"]').value.trim();
-    const email = signupForm.querySelector('input[type="email"]').value.trim();
-    const password = signupForm.querySelector('input[type="password"]').value.trim();
-    if (!username || !email || !password) return alert('Please fill in all fields!');
-
-    try {
-      const res = await fetch(AUTH_ENDPOINTS.register, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || 'Signup failed');
-      if (!data.token) throw new Error('No token received');
-
-      const decoded = decodeJWT(data.token);
-      if (!decoded) throw new Error('Invalid token');
-      saveAuthData(data.token, decoded);
-
-      alert(`Welcome, ${decoded.username || username}!`);
-      closeAuthModal();
-      updateAuthUI();
-    } catch (err) {
-      console.error(err);
-      alert(err.message || 'Signup failed. Try again.');
-    }
-  });
-
-  // ====== AUTH UI UPDATE ======
-  function updateAuthUI() {
-    const authButtonsContainer = document.getElementById('authButtons');
-    if (!authButtonsContainer) return;
-    const { token, user } = getAuthData();
-
-    if (token && user) {
-      const isReturning = localStorage.getItem('isReturningUser') === 'true';
-      const greeting = isReturning ? 'Welcome back' : 'Welcome';
-      authButtonsContainer.innerHTML = `
-        <div class="user-greeting">
-          <span>${greeting}, ${user.username || 'User'}!</span>
-          <button class="logout-btn" onclick="handleLogout()">Logout</button>
-        </div>`;
-    } else {
-      authButtonsContainer.innerHTML = `
-        <div class="auth-buttons">
-          <button class="auth-nav-btn login" onclick="openAuthModal('login')">Login</button>
-          <button class="auth-nav-btn signup" onclick="openAuthModal('signup')">Sign up</button>
-        </div>`;
-    }
-  }
-
-  // ====== LOGOUT ======
-  function handleLogout() {
-    if (confirm('Are you sure you want to logout?')) {
-      clearAuthData();
-      updateAuthUI();
-      alert('You have been logged out successfully!');
-    }
-  }
-
-  // ====== REPORT FUNCTIONS ======
-  async function createReport(reportData) {
-    const { token } = getAuthData();
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(REPORT_ENDPOINTS.create, { method: 'POST', headers, body: JSON.stringify(reportData) });
-    if (!res.ok) throw new Error('Failed to create report');
-    return res.json();
-  }
-
-  async function getAllReports() {
-    const { token } = getAuthData();
-    const headers = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(REPORT_ENDPOINTS.all, { headers });
-    if (!res.ok) throw new Error('Failed to fetch reports');
-    return res.json();
-  }
-
-  async function getReportById(id) {
-    const { token } = getAuthData();
-    const headers = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(REPORT_ENDPOINTS.view(id), { headers });
-    if (!res.ok) throw new Error('Failed to fetch report');
-    return res.json();
-  }
-
-  async function updateReport(id, updateData) {
-    const { token } = getAuthData();
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(REPORT_ENDPOINTS.update(id), { method: 'PUT', headers, body: JSON.stringify(updateData) });
-    if (!res.ok) throw new Error('Failed to update report');
-    return res.json();
-  }
-
-  async function deleteReport(id) {
-    const { token } = getAuthData();
-    const headers = {};
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    const res = await fetch(REPORT_ENDPOINTS.delete(id), { method: 'DELETE', headers });
-    if (!res.ok) throw new Error('Failed to delete report');
-    return res.json();
-  }
-
-  // ====== INIT ======
-  updateAuthUI();
-  window.openAuthModal = openAuthModal;
-  window.handleLogout = handleLogout;
-  window.createReport = createReport;
-  window.getAllReports = getAllReports;
-  window.getReportById = getReportById;
-  window.updateReport = updateReport;
-  window.deleteReport = deleteReport;
 });
+
+// === FEEDBACK HANDLERS ===
+async function renderFeedback() {
+  const grid = document.getElementById("feedbackGrid");
+  if (!grid) return;
+  grid.innerHTML = "<p>⏳ Loading...</p>";
+
+  const feedback = await apiRequest("feedback") || [];
+  if (!feedback.length) {
+    grid.innerHTML = '<div class="empty-state"><p>No feedback yet.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = feedback.map(f => `
+    <div class="feedback-card">
+      <div class="feedback-header">
+        <span class="feedback-name">${f.name || 'Anonymous'}</span>
+        <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
+      </div>
+      <div class="rating-stars">${'★'.repeat(f.rating || 0) + '☆'.repeat(5 - (f.rating || 0))}</div>
+      <div class="feedback-comment">${f.comment || ''}</div>
+    </div>
+  `).join('');
+}
+
+async function deleteFeedback(id) {
+  if (!confirm("Delete this feedback?")) return;
+  await apiRequest(`feedback/${id}`, "DELETE");
+  renderFeedback();
+}
+
+// === SIDEBAR NAVIGATION ===
+document.querySelectorAll(".nav-item").forEach(item => {
+  item.addEventListener("click", function () {
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    this.classList.add("active");
+
+    const sectionId = this.dataset.section + "-section";
+    document.querySelectorAll(".content-section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById(sectionId).classList.add("active");
+
+    if (window.innerWidth <= 768) {
+      document.getElementById("sidebar").classList.remove("visible");
+      document.getElementById("menuToggle").classList.remove("active");
+    }
+  });
+});
+
+const menuToggleBtn = document.getElementById("menuToggle");
+if (menuToggleBtn) {
+  menuToggleBtn.addEventListener("click", () => {
+    const sidebar = document.getElementById("sidebar");
+    sidebar?.classList.toggle("visible");
+    menuToggleBtn.classList.toggle("active");
+  });
+}
+
+// === LOGOUT ===
+const logoutBtn = document.getElementById("logoutBtn");
+logoutBtn?.addEventListener("click", () => {
+  if (confirm("Logout now?")) {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userData");
+    window.location.href = "";
+  }
+});
+
+// === DASHBOARD INIT ===
+async function initDashboard() {
+  const token = checkAuth();
+  if (!token) return;
+
+  const user = JSON.parse(localStorage.getItem("userData") || "{}");
+  const welcomeEl = document.getElementById("welcomeMessage");
+  if (welcomeEl) {
+    welcomeEl.textContent = `Welcome back, ${user.username || "User"} 👋`;
+  }
+
+  await renderBookings();
+  await renderFeedback();
+}
+
+document.addEventListener("DOMContentLoaded", initDashboard);

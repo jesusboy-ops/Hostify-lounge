@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
-  // === THEME TOGGLE ===
+ 
   const modeToggle = document.getElementById("modeToggle");
   const body = document.body;
   if (localStorage.getItem("theme") === "light") {
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("theme", isLight ? "light" : "dark");
   });
 
-  // === MOBILE MENU ===
+ 
   const mobileToggle = document.getElementById("mobileToggle");
   const navCenter = document.getElementById("navCenter");
   mobileToggle?.addEventListener("click", () => {
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     mobileToggle.textContent = navCenter?.classList.contains("active") ? "✕" : "☰";
   });
 
-  // === MESSAGE UTILITY ===
+
   const messageContainer = document.getElementById("messageContainer");
   function showMessage(text, type = "info", duration = 2500) {
     if (!messageContainer) return;
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => (messageContainer.style.display = "none"), duration);
   }
 
-  // === STAR RATING ===
+ 
   const stars = document.querySelectorAll("#starContainer span");
   let selectedRating = 0;
   function updateStars(rating) {
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let tempFeedbackData = {};
 
-  // === THANK YOU POPUP ===
+  
   function showThankYouMessage() {
     const existing = document.querySelector(".thank-you-popup");
     if (existing) existing.remove();
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
   `;
   document.head.appendChild(style);
 
-  // === STEP 1: MAIN SUBMIT ===
+
   submitBtn?.addEventListener("click", () => {
     if (!selectedRating) return showMessage("Please select a rating!", "error");
     tempFeedbackData = { rating: selectedRating, comment: commentInput.value.trim() || "No comment" };
@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cancelName?.addEventListener("click", () => { if (nameModal) nameModal.style.display = "none"; });
 
-  // === STEP 2: SUBMIT NAME & SEND TO API ===
+ 
   submitName?.addEventListener("click", async () => {
     const name = userNameInput?.value.trim();
     if (!name) return showMessage("Please enter your name!", "error");
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (feedbackList.querySelector("p")) feedbackList.innerHTML = "";
       feedbackList.insertBefore(feedbackItem, feedbackList.firstChild);
 
-      // Reset form
+      
       selectedRating = 0;
       updateStars(0);
       commentInput.value = "";
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // === LOAD EXISTING FEEDBACK ===
+
   async function loadFeedback() {
     try {
       const res = await fetch(`${API_BASE}/feedback`);
