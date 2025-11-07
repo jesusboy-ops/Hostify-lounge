@@ -31,17 +31,50 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
     if (!res.ok) throw new Error(data.message || `Request failed: ${res.status}`);
     return data;
   } catch (err) {
-    console.error(err);
-    alert(`Server error: ${err.message}`);
+    console.error(`API Error (${endpoint}):`, err);
     return null;
   }
 }
 
-// === BOOKINGS HANDLERS ===
+// === SIDEBAR NAVIGATION ===
+document.querySelectorAll(".nav-item").forEach(item => {
+  item.addEventListener("click", function () {
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    this.classList.add("active");
+
+    document.querySelectorAll(".content-section").forEach(sec => sec.classList.remove("active"));
+    const sectionId = this.dataset.section + "-section";
+    const section = document.getElementById(sectionId);
+    if (section) section.classList.add("active");
+
+    // Close sidebar on small screens
+    if (window.innerWidth <= 768) {
+      document.getElementById("sidebar").classList.remove("visible");
+      document.getElementById("menuToggle").classList.remove("active");
+    }
+  });
+});
+
+document.getElementById("menuToggle").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("visible");
+  document.getElementById("menuToggle").classList.toggle("active");
+});
+
+// === LOGOUT ===
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  if (confirm("Logout now?")) {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userData");
+    window.location.href = "../index.html";
+  }
+});
+
+// === BOOKINGS ===
 async function renderBookings() {
   const tbody = document.getElementById("bookingsTableBody");
-  tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
+  if (!tbody) return console.warn("No #bookingsTableBody found");
 
+  tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
   const res = await apiRequest("bookings/all") || {};
   const bookings = res.bookings || [];
 
@@ -58,8 +91,8 @@ async function renderBookings() {
       <td>${b.space || '-'}</td>
       <td>${b.status || 'Pending'}</td>
       <td>
-        <button class="action-btn approve" onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
-        <button class="action-btn reject" onclick="updateBookingStatus('${b._id}','Cancelled')">❌</button>
+        <button onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
+        <button onclick="updateBookingStatus('${b._id}','Cancelled')">❌</button>
       </td>
     </tr>
   `).join('');
@@ -71,69 +104,69 @@ async function updateBookingStatus(id, status) {
   renderBookings();
 }
 
-async function deleteBooking(id) {
-  if (!confirm("Delete this booking?")) return;
-  await apiRequest(`bookings/delete/${id}`, "DELETE");
-  renderBookings();
-}
-
-async function cancelBooking(id) {
-  if (!confirm("Cancel this booking?")) return;
-  await apiRequest(`bookings/cancel/${id}`, "PUT");
-  renderBookings();
-}
-
-// === BOOKING FORM SUBMISSION ===
-const bookingForm = document.getElementById("bookingForm");
-bookingForm?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const token = checkAuth();
-  if (!token) return;
-
-  const customerName = document.getElementById("fullName")?.value.trim();
-  const phoneNum = document.getElementById("phone")?.value.trim();
-  const space = document.getElementById("space")?.value.trim() || "Default";
-  const date = document.getElementById("date")?.value;
-  const time = document.getElementById("time")?.value;
-  const people = Number(document.getElementById("guests")?.value) || 1;
-
-  if (!customerName || !phoneNum || !date || !time) {
-    alert("Please fill in all required fields");
+// === ORDERS ===
+async function renderOrders() {
+  const tbody = document.getElementById("ordersTableBody");
+  if (!tbody) {
+    console.warn("No #ordersTableBody found in HTML. Orders section cannot be rendered.");
     return;
   }
 
-  const bookingData = { customerName, phoneNum, space, date, time, people };
+  tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
 
-  try {
-    const res = await apiRequest("bookings/book", "POST", bookingData);
-    alert(res.message || "Booking submitted!");
-    bookingForm.reset();
-    renderBookings();
-  } catch (err) {
-    console.error("Booking error:", err);
-    alert("Error submitting booking: " + err.message);
+  const res = await apiRequest("orders") || {};
+  const orders = res.orders || [];
+
+  if (!orders.length) {
+    tbody.innerHTML = `<tr><td colspan="6">No orders found</td></tr>`;
+    return;
   }
-});
 
-// === FEEDBACK HANDLERS ===
+  tbody.innerHTML = orders.map(o => `
+    <tr>
+      <td>${o._id}</td>
+      <td>${o.userId?.username || '-'}</td>
+      <td>${o.totalPrice || '-'}</td>
+      <td>${o.status || 'Pending'}</td>
+      <td>${new Date(o.createdAt).toLocaleString() || '-'}</td>
+      <td>
+        <button onclick="updateOrderStatus('${o._id}','in-progress')">⏳</button>
+        <button onclick="updateOrderStatus('${o._id}','completed')">✅</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// Optional: update order status function
+async function updateOrderStatus(id, status) {
+  if (!confirm(`Change order status to "${status}"?`)) return;
+  await apiRequest(`orders/update/${id}`, "PUT", { status });
+  renderOrders();
+}
+
+
+// === FEEDBACK ===
 async function renderFeedback() {
   const grid = document.getElementById("feedbackGrid");
-  grid.innerHTML = "<p>⏳ Loading...</p>";
+  if (!grid) return console.warn("No #feedbackGrid found");
 
-  const feedback = await apiRequest("feedback") || [];
+  grid.innerHTML = "<p>⏳ Loading...</p>";
+  const res = await apiRequest("feedback") || {};
+  const feedback = res.feedbacks || [];
+
   if (!feedback.length) {
-    grid.innerHTML = '<div class="empty-state"><p>No feedback yet.</p></div>';
+    grid.innerHTML = "<p>No feedback found.</p>";
     return;
   }
 
   grid.innerHTML = feedback.map(f => `
     <div class="feedback-card">
-      <div class="feedback-header">
-        <span class="feedback-name">${f.name || 'Anonymous'}</span>
-        <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
+      <div>
+        <strong>${f.name || "Anonymous"}</strong>
+        <button onclick="deleteFeedback('${f._id}')">🗑️</button>
       </div>
-      <div class="rating-stars">${'★'.repeat(f.rating || 0) + '☆'.repeat(5 - (f.rating || 0))}</div>
-      <div class="feedback-comment">${f.comment || ''}</div>
+      <div>${'★'.repeat(f.rating || 0)}${'☆'.repeat(5 - (f.rating || 0))}</div>
+      <p>${f.comment || ''}</p>
     </div>
   `).join('');
 }
@@ -144,46 +177,17 @@ async function deleteFeedback(id) {
   renderFeedback();
 }
 
-// === SIDEBAR NAVIGATION ===
-document.querySelectorAll(".nav-item").forEach(item => {
-  item.addEventListener("click", function () {
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-    this.classList.add("active");
-
-    const sectionId = this.dataset.section + "-section";
-    document.querySelectorAll(".content-section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById(sectionId).classList.add("active");
-
-    if (window.innerWidth <= 768) {
-      document.getElementById("sidebar").classList.remove("visible");
-      document.getElementById("menuToggle").classList.remove("active");
-    }
-  });
-});
-
-document.getElementById("menuToggle").addEventListener("click", function () {
-  document.getElementById("sidebar").classList.toggle("visible");
-  this.classList.toggle("active");
-});
-
-// === LOGOUT ===
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  if (confirm("Logout now?")) {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userData");
-    window.location.href = "../index.html";
-  }
-});
-
 // === DASHBOARD INIT ===
 async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
 
   const user = JSON.parse(localStorage.getItem("userData") || "{}");
-  document.getElementById("welcomeMessage").textContent = `Welcome back, ${user.username || "User"} 👋`;
+  const welcome = document.getElementById("welcomeMessage");
+  if (welcome) welcome.textContent = `Welcome back, ${user.username || "User"} 👋`;
 
   await renderBookings();
+  await renderOrders();
   await renderFeedback();
 }
 
