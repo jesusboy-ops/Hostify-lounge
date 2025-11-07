@@ -4,7 +4,13 @@ menuToggle.addEventListener("click", () => {
   navLinks.classList.toggle("active");
   menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
 });
-
+ // === THEME TOGGLE ===
+  const themeToggle = document.getElementById("themeToggle");
+  themeToggle?.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    themeToggle.textContent = document.body.classList.contains("dark") ? "🔆" : "🌙";
+  });
+  
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Booking script initialized ✅");
 
