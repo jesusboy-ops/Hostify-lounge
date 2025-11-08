@@ -1,10 +1,18 @@
-// === MENU DATA ===
+
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 menuToggle.addEventListener("click", () => {
   navLinks.classList.toggle("active");
   menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
 });
+
+ // === THEME TOGGLE ===
+  const themeToggle = document.getElementById("themeToggle");
+  themeToggle?.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    themeToggle.textContent = document.body.classList.contains("dark") ? "🔆" : "🌙";
+  });
+  
 const menuItems = [
 
   {
@@ -96,7 +104,7 @@ const menuItems = [
     image: "/images/Palm Wine - Traditional West African Drink _ 196….jpeg",
   },
 
-  // food
+  
   {
     _id: "11",
     name: "Jollof Rice",

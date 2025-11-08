@@ -342,7 +342,7 @@ body.dark .checkout-form button {
   background: #2b3148;
 }
 
-/* Footer */
+
 footer {
   background: #4b352a;
   color: white;
@@ -355,7 +355,7 @@ footer {
 body.dark footer {
   background: #2b3148;
 }
-/* Overlay Spinner for Orders */
+
 .order-overlay {
   display: none;
   position: fixed;

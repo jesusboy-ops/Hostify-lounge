@@ -1,4 +1,4 @@
-/* === AUTH MODAL STYLES === */
+
 .auth-modal {
   display: none;
   position: fixed;
@@ -187,7 +187,7 @@
   letter-spacing: 2px;
 }
 
-/* Auth Buttons in Navbar */
+
 .auth-buttons {
   display: flex;
   gap: 12px;
@@ -243,7 +243,7 @@
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Message Box */
+
 .message-container {
   position: fixed;
   top: 10%;

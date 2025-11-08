@@ -4,23 +4,23 @@ menuToggle.addEventListener("click", () => {
   navLinks.classList.toggle("active");
   menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
 });
- // === THEME TOGGLE ===
+ 
   const themeToggle = document.getElementById("themeToggle");
   themeToggle?.addEventListener("click", () => {
     document.body.classList.toggle("dark");
     themeToggle.textContent = document.body.classList.contains("dark") ? "🔆" : "🌙";
   });
-  
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Booking script initialized ✅");
 
-  const BOOKING_API = "https://hostify-app-nnod.vercel.app/api/bookings";
+  const BOOKING_API = "https://hostify-app-nnod.vercel.app/api/bookings/book";
 
   
   const bookingForm = document.getElementById("bookingForm");
   const overlay = document.getElementById("bookingOverlay");
   const messageBox = document.getElementById("messageContainer");
-
+  
   function showMessage(msg, type = "info") {
     messageBox.style.display = "block";
     messageBox.textContent = msg;
@@ -60,25 +60,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     overlay.style.display = "flex";
 
- 
+   const email = localStorage.getItem("email");
     const payload = {
       customerName: document.getElementById("fullName").value.trim(),
       phoneNum: document.getElementById("phone").value.trim(),
-      email: document.getElementById("email")
-        ? document.getElementById("email").value.trim()
-        : "guest@example.com", // fallback if email input missing
+      
+    
       space: document.getElementById("space").value,
       date: document.getElementById("date").value,
       time: document.getElementById("time").value,
       people: Number(document.getElementById("guests").value),
       specialRequests: document.getElementById("specialRequests").value.trim()
     };
+  
 
     // Validate required fields
     if (
       !payload.customerName ||
       !payload.phoneNum ||
-      !payload.email ||
+      
       !payload.space ||
       !payload.date ||
       !payload.time ||

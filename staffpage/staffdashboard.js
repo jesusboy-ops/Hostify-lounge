@@ -1,7 +1,7 @@
-// === API CONFIG ===
+
 const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
-// === AUTH HELPERS ===
+
 function getAuthToken() {
   return localStorage.getItem("authToken");
 }
@@ -15,7 +15,7 @@ function checkAuth() {
   return token;
 }
 
-// === GENERIC API REQUEST ===
+
 async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
   try {
     const headers = { "Content-Type": "application/json" };
@@ -36,7 +36,7 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
   }
 }
 
-// === SIDEBAR NAVIGATION ===
+
 document.querySelectorAll(".nav-item").forEach(item => {
   item.addEventListener("click", function () {
     document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
@@ -47,7 +47,7 @@ document.querySelectorAll(".nav-item").forEach(item => {
     const section = document.getElementById(sectionId);
     if (section) section.classList.add("active");
 
-    // Close sidebar on small screens
+    
     if (window.innerWidth <= 768) {
       document.getElementById("sidebar").classList.remove("visible");
       document.getElementById("menuToggle").classList.remove("active");
@@ -60,7 +60,7 @@ document.getElementById("menuToggle").addEventListener("click", () => {
   document.getElementById("menuToggle").classList.toggle("active");
 });
 
-// === LOGOUT ===
+
 document.getElementById("logoutBtn").addEventListener("click", () => {
   if (confirm("Logout now?")) {
     localStorage.removeItem("authToken");
@@ -69,7 +69,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   }
 });
 
-// === BOOKINGS ===
+
 async function renderBookings() {
   const tbody = document.getElementById("bookingsTableBody");
   if (!tbody) return console.warn("No #bookingsTableBody found");
@@ -104,7 +104,7 @@ async function updateBookingStatus(id, status) {
   renderBookings();
 }
 
-// === ORDERS ===
+
 async function renderOrders() {
   const tbody = document.getElementById("ordersTableBody");
   if (!tbody) {
@@ -137,7 +137,7 @@ async function renderOrders() {
   `).join('');
 }
 
-// Optional: update order status function
+
 async function updateOrderStatus(id, status) {
   if (!confirm(`Change order status to "${status}"?`)) return;
   await apiRequest(`orders/update/${id}`, "PUT", { status });
@@ -145,7 +145,7 @@ async function updateOrderStatus(id, status) {
 }
 
 
-// === FEEDBACK ===
+
 async function renderFeedback() {
   const grid = document.getElementById("feedbackGrid");
   if (!grid) return console.warn("No #feedbackGrid found");
@@ -177,7 +177,7 @@ async function deleteFeedback(id) {
   renderFeedback();
 }
 
-// === DASHBOARD INIT ===
+
 async function initDashboard() {
   const token = checkAuth();
   if (!token) return;

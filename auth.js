@@ -163,7 +163,7 @@ loginForm?.addEventListener("submit", async e => {
     showMessage(`Welcome ${decoded.username || "User"}!`, "success");
 
     setTimeout(() => {
-      if (decoded.role === "admin") window.location.href = "/staffpage/staffdashboard.html";
+      if (decoded.role === "admin") window.location.href = "/staffpage/staffDashboard.html";
       else window.location.href = "/index.html";
     }, 1200);
   } catch (err) {
@@ -210,7 +210,7 @@ signupForm?.addEventListener("submit", async e => {
   }
 });
 
-// === LOGOUT HANDLER ===
+
 function handleLogout() {
   clearAuthData();
   updateAuthUI();
