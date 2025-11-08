@@ -1,7 +1,6 @@
-
 const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
-
+/* ===== AUTH HANDLING ===== */
 function getAuthToken() {
   return localStorage.getItem("authToken");
 }
@@ -9,13 +8,13 @@ function getAuthToken() {
 function checkAuth() {
   const token = getAuthToken();
   if (!token) {
-    window.location.href = "../auth.js";
+    window.location.href = "../auth/login.html";
     return null;
   }
   return token;
 }
 
-
+/* ===== API REQUEST WRAPPER ===== */
 async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
   try {
     const headers = { "Content-Type": "application/json" };
@@ -36,18 +35,27 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
   }
 }
 
+/* ===== SIDEBAR NAVIGATION ===== */
+const navItems = document.querySelectorAll(".nav-item");
+const contentSections = document.querySelectorAll(".content-section");
 
-document.querySelectorAll(".nav-item").forEach(item => {
-  item.addEventListener("click", function () {
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-    this.classList.add("active");
+navItems.forEach(item => {
+  item.addEventListener("click", () => {
+    // deactivate all
+    navItems.forEach(i => i.classList.remove("active"));
+    contentSections.forEach(sec => sec.classList.remove("active"));
 
-    document.querySelectorAll(".content-section").forEach(sec => sec.classList.remove("active"));
-    const sectionId = this.dataset.section + "-section";
-    const section = document.getElementById(sectionId);
-    if (section) section.classList.add("active");
+    // activate clicked
+    item.classList.add("active");
+    const sectionId = `${item.dataset.section}-section`;
+    document.getElementById(sectionId)?.classList.add("active");
 
-    
+    // Load section content dynamically
+    if (sectionId === "bookings-section") renderBookings();
+    else if (sectionId === "orders-section") renderOrders();
+    else if (sectionId === "feedback-section") renderFeedback();
+
+    // hide sidebar in mobile
     if (window.innerWidth <= 768) {
       document.getElementById("sidebar").classList.remove("visible");
       document.getElementById("menuToggle").classList.remove("active");
@@ -55,12 +63,13 @@ document.querySelectorAll(".nav-item").forEach(item => {
   });
 });
 
+/* ===== MENU TOGGLE ===== */
 document.getElementById("menuToggle").addEventListener("click", () => {
   document.getElementById("sidebar").classList.toggle("visible");
   document.getElementById("menuToggle").classList.toggle("active");
 });
 
-
+/* ===== LOGOUT ===== */
 document.getElementById("logoutBtn").addEventListener("click", () => {
   if (confirm("Logout now?")) {
     localStorage.removeItem("authToken");
@@ -69,27 +78,28 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   }
 });
 
-
+/* ===== BOOKINGS ===== */
 async function renderBookings() {
+  const section = document.getElementById("bookings-section");
   const tbody = document.getElementById("bookingsTableBody");
-  if (!tbody) return console.warn("No #bookingsTableBody found");
+  if (!section || !tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
   const res = await apiRequest("bookings/all") || {};
   const bookings = res.bookings || [];
 
   if (!bookings.length) {
-    tbody.innerHTML = '<tr><td colspan="6">No bookings found</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="6">No bookings found</td></tr>`;
     return;
   }
 
   tbody.innerHTML = bookings.map(b => `
     <tr>
-      <td>${b.customerName || '-'}</td>
-      <td>${b.date || '-'}</td>
-      <td>${b.time || '-'}</td>
-      <td>${b.space || '-'}</td>
-      <td>${b.status || 'Pending'}</td>
+      <td>${b.customerName || "-"}</td>
+      <td>${b.date || "-"}</td>
+      <td>${b.time || "-"}</td>
+      <td>${b.space || "-"}</td>
+      <td>${b.status || "Pending"}</td>
       <td>
         <button onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
         <button onclick="updateBookingStatus('${b._id}','Cancelled')">❌</button>
@@ -104,16 +114,13 @@ async function updateBookingStatus(id, status) {
   renderBookings();
 }
 
-
+/* ===== ORDERS ===== */
 async function renderOrders() {
+  const section = document.getElementById("orders-section");
   const tbody = document.getElementById("ordersTableBody");
-  if (!tbody) {
-    console.warn("No #ordersTableBody found in HTML. Orders section cannot be rendered.");
-    return;
-  }
+  if (!section || !tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
-
   const res = await apiRequest("orders") || {};
   const orders = res.orders || [];
 
@@ -122,21 +129,28 @@ async function renderOrders() {
     return;
   }
 
-  tbody.innerHTML = orders.map(o => `
-    <tr>
-      <td>${o._id}</td>
-      <td>${o.userId?.username || '-'}</td>
-      <td>${o.totalPrice || '-'}</td>
-      <td>${o.status || 'Pending'}</td>
-      <td>${new Date(o.createdAt).toLocaleString() || '-'}</td>
-      <td>
-        <button onclick="updateOrderStatus('${o._id}','in-progress')">⏳</button>
-        <button onclick="updateOrderStatus('${o._id}','completed')">✅</button>
-      </td>
-    </tr>
-  `).join('');
-}
+  tbody.innerHTML = orders.map(o => {
+    const itemPurchased = o.primaryItem || o.items?.[0]?.name || "—";
+    const customer = o.customerName || o.userId?.username || o.user?.name || "—";
+    const total = o.totalPrice ? `₦${Number(o.totalPrice).toLocaleString()}` : "₦0";
+    const status = o.status || "Pending";
+    const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
 
+    return `
+      <tr>
+        <td><strong>${customer}</strong></td>
+        <td>${itemPurchased}</td>
+        <td>${total}</td>
+        <td><span class="status-badge status-${status.toLowerCase()}">${status}</span></td>
+        <td>${date}</td>
+        <td>
+          <button class="action-btn complete" onclick="updateOrderStatus('${o._id}','completed')">✅</button>
+          <button class="action-btn pending" onclick="updateOrderStatus('${o._id}','in-progress')">⏳</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
 
 async function updateOrderStatus(id, status) {
   if (!confirm(`Change order status to "${status}"?`)) return;
@@ -145,28 +159,29 @@ async function updateOrderStatus(id, status) {
 }
 
 
-
+/* ===== FEEDBACK ===== */
 async function renderFeedback() {
+  const section = document.getElementById("feedback-section");
   const grid = document.getElementById("feedbackGrid");
-  if (!grid) return console.warn("No #feedbackGrid found");
+  if (!section || !grid) return;
 
-  grid.innerHTML = "<p>⏳ Loading...</p>";
+  grid.innerHTML = `<p>⏳ Loading...</p>`;
   const res = await apiRequest("feedback") || {};
   const feedback = res.feedbacks || [];
 
   if (!feedback.length) {
-    grid.innerHTML = "<p>No feedback found.</p>";
+    grid.innerHTML = `<p>No feedback found.</p>`;
     return;
   }
 
   grid.innerHTML = feedback.map(f => `
     <div class="feedback-card">
-      <div>
-        <strong>${f.name || "Anonymous"}</strong>
-        <button onclick="deleteFeedback('${f._id}')">🗑️</button>
+      <div class="feedback-header">
+        <span class="feedback-name">${f.name || "Anonymous"}</span>
+        <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
       </div>
-      <div>${'★'.repeat(f.rating || 0)}${'☆'.repeat(5 - (f.rating || 0))}</div>
-      <p>${f.comment || ''}</p>
+      <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(5 - (f.rating || 0))}</div>
+      <p class="feedback-comment">${f.comment || ""}</p>
     </div>
   `).join('');
 }
@@ -177,18 +192,18 @@ async function deleteFeedback(id) {
   renderFeedback();
 }
 
-
+/* ===== DASHBOARD INIT ===== */
 async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
 
-  const user = JSON.parse(localStorage.getItem("userData") || "{}");
+  const user = JSON.parse(localStorage.getItem("fullUser") || "{}");
   const welcome = document.getElementById("welcomeMessage");
   if (welcome) welcome.textContent = `Welcome back, ${user.username || "User"} 👋`;
 
+  // Load default section (bookings)
   await renderBookings();
-  await renderOrders();
-  await renderFeedback();
+  document.getElementById("bookings-section")?.classList.add("active");
 }
 
 document.addEventListener("DOMContentLoaded", initDashboard);

@@ -73,13 +73,7 @@
     </div>
 
     
-    <div class="content-section" id="orders-section">
-      <div class="section-header">
-        <h3>Customer Orders</h3>
-        <p>Track and manage all incoming orders</p>
-      </div>
-      <div id="ordersTableBody" class="card-grid"></div>
-    </div>
+    
 
     
     <div class="content-section" id="feedback-section">
@@ -91,12 +85,27 @@
     </div>
 
     
-    <div class="content-section" id="ordersTableBody">
+     <!-- Orders Section -->
+    <section id="orders-section" class="content-section">
       <div class="section-header">
-        <h3>Staff Reports</h3>
-        <p>View daily staff reports</p>
+        <h3>Orders</h3>
+        <p>All food and service orders</p>
       </div>
-      <div id="reportsGrid" class="card-grid"></div>
+      <div class="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer Name</th>
+              <th>Items Bought</th>
+              <th>Total price</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
     </div>
 
   </main>

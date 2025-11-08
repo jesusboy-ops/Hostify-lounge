@@ -408,52 +408,105 @@ function displayCart() {
 
 
 async function submitOrder() {
-  if (!cart.length) return showMessage("Cart is empty", "error");
-  
+  if (!cart.length) return showMessage("🛒 Your cart is empty.", "error");
+
+  // Spinner overlay
   const overlay = document.createElement("div");
   Object.assign(overlay.style, {
-    position: "fixed", inset: "0", background: "rgba(0,0,0,0.5)", display: "flex",
-    justifyContent: "center", alignItems: "center", zIndex: "9999"
+    position: "fixed",
+    inset: "0",
+    background: "rgba(0,0,0,0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: "9999"
   });
-  overlay.innerHTML = `<div style="color:white; text-align:center;">
-    <div style="border:6px solid rgba(255,255,255,0.3); border-top:6px solid white; border-radius:50%; width:50px; height:50px; margin:auto; animation:spin 1s linear infinite;"></div>
-    <p>Processing your order...</p>
-  </div>`;
+  overlay.innerHTML = `
+    <div style="color:white; text-align:center;">
+      <div style="
+        border:6px solid rgba(255,255,255,0.3);
+        border-top:6px solid white;
+        border-radius:50%;
+        width:50px; height:50px;
+        margin:auto;
+        animation:spin 1s linear infinite;
+      "></div>
+      <p style="margin-top:10px;">Processing your order...</p>
+    </div>
+  `;
   document.body.appendChild(overlay);
 
-  const token = localStorage.getItem("authToken"); // optional token
-  const payload = {
-    userId: token ? localStorage.getItem("userId") : undefined,
-    items: cart.map(i => ({ name: i.name, quantity: i.quantity, price: i.price })),
-    totalPrice: cart.reduce((sum, i) => sum + i.price * i.quantity, 0)
-  };
+  const spinKeyframe = document.createElement("style");
+  spinKeyframe.innerHTML = `@keyframes spin { to { transform: rotate(360deg); } }`;
+  document.head.appendChild(spinKeyframe);
 
   try {
+    const token = localStorage.getItem("authToken");
+    const userId = localStorage.getItem("userId");
+    const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+    const customerName = userData.username || userData.name || "Anonymous";
+
+    // Build items payload
+    const itemsPayload = cart.map(i => ({
+      id: i._id || i.id || null,
+      name: i.name,
+      quantity: i.quantity,
+      price: i.price
+    }));
+
+    const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const primaryItem = itemsPayload[0]?.name || "—";
+
+    const payload = {
+      user: userId,
+      customerName,
+      items: itemsPayload,
+      totalPrice,
+      primaryItem
+    };
+
+    console.log("📦 Sending order payload:", payload);
+
     const res = await fetch("https://hostify-app-nnod.vercel.app/api/orders/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { "Authorization": `Bearer ${token}` } : {})
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
       },
       body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = { message: text };
+    }
+
     document.body.removeChild(overlay);
 
-    if (!res.ok) return showMessage(data.message || "Order failed", "error");
+    if (!res.ok) {
+      console.error("❌ Order failed:", data);
+      return showMessage(
+        data.message || data.errors?.[0]?.msg || "Order failed. Try again later.",
+        "error"
+      );
+    }
 
-    showMessage("✅ Order submitted successfully!", "success");
+    console.log("✅ Order success:", data);
+    showMessage("✅ Order placed successfully!", "success");
     cart = [];
     updateCartCount();
     displayCart();
 
   } catch (err) {
     document.body.removeChild(overlay);
-    console.error(err);
-    showMessage("⚠️ Network error. Try again.", "error");
+    console.error("⚠️ Network or script error:", err);
+    showMessage("⚠️ Network error. Please try again.", "error");
   }
 }
+
 
 // === EVENT LISTENERS ===
 document.getElementById("cartIcon").addEventListener("click", () => {
