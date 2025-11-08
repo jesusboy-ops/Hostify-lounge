@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
+  // Elements
   const messageContainer = document.getElementById("messageContainer");
   const feedbackList = document.getElementById("feedbackList");
   const commentInput = document.getElementById("commentInput");
@@ -10,11 +11,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitName = document.getElementById("submitName");
   const cancelName = document.getElementById("cancelName");
   const stars = document.querySelectorAll("#starContainer span");
+  const themeToggle = document.getElementById("modeToggle");
+  const menuToggle = document.getElementById("mobileToggle");
+  const navLinks = document.getElementById("navCenter");
 
   let selectedRating = 0;
   let tempFeedbackData = {};
 
-  // --- Helper functions ---
+  // --- Helpers ---
   function showMessage(text, type = "info", duration = 2500) {
     if (!messageContainer) return;
     messageContainer.textContent = text;
@@ -45,7 +49,23 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => popup.remove(), 3000);
   }
 
-  // --- Star rating events ---
+  function addFeedbackToDOM(feedback) {
+    if (!feedbackList) return;
+    if (feedbackList.querySelector("p")) feedbackList.innerHTML = "";
+
+    const feedbackItem = document.createElement("div");
+    feedbackItem.className = "feedback-item";
+    feedbackItem.innerHTML = `
+      <div class="feedback-item__header">
+        <div class="feedback-item__stars">${"★".repeat(feedback.rating)}${"☆".repeat(5 - feedback.rating)}</div>
+        <div class="feedback-item__date">${new Date(feedback.date).toLocaleDateString()}</div>
+      </div>
+      <div class="feedback-item__comment"><strong>${feedback.name}:</strong> ${feedback.comment}</div>
+    `;
+    feedbackList.prepend(feedbackItem);
+  }
+
+  // --- Stars Hover/Click ---
   stars.forEach(star => {
     const value = parseInt(star.dataset.value);
     star.addEventListener("click", () => { selectedRating = value; updateStars(selectedRating); });
@@ -53,16 +73,18 @@ document.addEventListener("DOMContentLoaded", () => {
     star.addEventListener("mouseout", () => updateStars(selectedRating));
   });
 
-  // --- Open name modal on submit ---
+  // --- Open Name Modal ---
   submitBtn?.addEventListener("click", () => {
     if (!selectedRating) return showMessage("Please select a rating!", "error");
     tempFeedbackData = { rating: selectedRating, comment: commentInput.value.trim() || "No comment" };
     if (nameModal) nameModal.style.display = "flex";
   });
 
-  cancelName?.addEventListener("click", () => { if (nameModal) nameModal.style.display = "none"; });
+  cancelName?.addEventListener("click", () => {
+    if (nameModal) nameModal.style.display = "none";
+  });
 
-  // --- Submit feedback with name ---
+  // --- Submit Feedback ---
   submitName?.addEventListener("click", async () => {
     const name = userNameInput?.value.trim();
     if (!name) return showMessage("Please enter your name!", "error");
@@ -70,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const feedbackData = { ...tempFeedbackData, name, date: new Date().toISOString() };
 
     try {
+      // Send to backend
       const token = localStorage.getItem("authToken");
       const headers = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -77,25 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`${API_BASE}/feedback/post`, {
         method: "POST",
         headers,
-        body: JSON.stringify(feedbackData),
+        body: JSON.stringify(feedbackData)
       });
 
       if (!res.ok) throw new Error("Failed to send feedback");
-      const savedFeedback = await res.json();
 
-      // Insert feedback immediately
-      const feedbackItem = document.createElement("div");
-      feedbackItem.className = "feedback-item";
-      feedbackItem.innerHTML = `
-        <div class="feedback-item__header">
-          <div class="feedback-item__stars">${"★".repeat(savedFeedback.rating)}${"☆".repeat(5 - savedFeedback.rating)}</div>
-          <div class="feedback-item__date">${new Date(savedFeedback.date).toLocaleDateString()}</div>
-        </div>
-        <div class="feedback-item__comment"><strong>${savedFeedback.name}:</strong> ${savedFeedback.comment}</div>
-      `;
-
-      if (feedbackList.querySelector("p")) feedbackList.innerHTML = "";
-      feedbackList.insertBefore(feedbackItem, feedbackList.firstChild);
+      // Add feedback immediately
+      addFeedbackToDOM(feedbackData);
 
       // Reset form
       selectedRating = 0;
@@ -111,35 +122,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Load existing feedback ---
-  async function loadFeedback() {
-    try {
-      const res = await fetch(`${API_BASE}/feedback`);
-      if (!res.ok) throw new Error("Failed to load feedbacks");
-      const feedbacks = await res.json();
+ // === THEME TOGGLE ===
+  const theToggle = document.getElementById("modeToggle");
 
-      if (!feedbacks.length) {
-        feedbackList.innerHTML = "<p>No feedback yet. Be the first to share!</p>";
-        return;
-      }
-
-      feedbackList.innerHTML = feedbacks.map(fb => {
-        const name = localStorage.getItem("name") || "Anonymous"; // always use saved name
-        return `
-          <div class="feedback-item">
-            <div class="feedback-item__header">
-              <div class="feedback-item__stars">${"★".repeat(fb.rating)}${"☆".repeat(5 - fb.rating)}</div>
-              <div class="feedback-item__date">${new Date(fb.date).toLocaleDateString()}</div>
-            </div>
-            <div class="feedback-item__comment"><strong>${name}:</strong> ${fb.comment}</div>
-          </div>
-        `;
-      }).join("");
-    } catch (err) {
-      console.error(err);
-      feedbackList.innerHTML = `<p class="error">⚠️ Unable to load feedbacks.</p>`;
-    }
-  }
-
-  loadFeedback();
+  
+  themeToggle?.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    themeToggle.textContent = document.body.classList.contains("dark") ? "🔆" : "🌙";
+  });
+  // --- Mobile Menu ---
+  menuToggle?.addEventListener("click", () => {
+    navLinks.classList.toggle("active");
+    menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
+  });
 });

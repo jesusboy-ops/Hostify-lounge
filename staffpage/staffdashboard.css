@@ -363,6 +363,49 @@ tr:hover td {
   color: #666;
   line-height: 1.6;
 }
+
+/* ===== Action Buttons Styling ===== */
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;      /* Space between buttons */
+  justify-content: center; /* Center the buttons in the table cell */
+  align-items: center;
+}
+
+.action-buttons button {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+/* Optional: Color coding */
+.action-buttons button.complete {
+  background-color: #4CAF50; /* Green */
+  color: #fff;
+}
+
+.action-buttons button.pending {
+  background-color: #FFC107; /* Amber */
+  color: #fff;
+}
+
+.action-buttons button.delete-feedback,
+.action-buttons button.delete-booking,
+.action-buttons button.delete-order,
+.action-buttons button.cancel {
+  background-color: #F44336; /* Red */
+  color: #fff;
+}
+
+/* Hover effects */
+.action-buttons button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
 .empty-state {
   background: #fff;
   padding: 60px 40px;

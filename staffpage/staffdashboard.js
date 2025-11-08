@@ -41,21 +41,17 @@ const contentSections = document.querySelectorAll(".content-section");
 
 navItems.forEach(item => {
   item.addEventListener("click", () => {
-    // deactivate all
     navItems.forEach(i => i.classList.remove("active"));
     contentSections.forEach(sec => sec.classList.remove("active"));
 
-    // activate clicked
     item.classList.add("active");
     const sectionId = `${item.dataset.section}-section`;
     document.getElementById(sectionId)?.classList.add("active");
 
-    // Load section content dynamically
     if (sectionId === "bookings-section") renderBookings();
     else if (sectionId === "orders-section") renderOrders();
     else if (sectionId === "feedback-section") renderFeedback();
 
-    // hide sidebar in mobile
     if (window.innerWidth <= 768) {
       document.getElementById("sidebar").classList.remove("visible");
       document.getElementById("menuToggle").classList.remove("active");
@@ -80,9 +76,8 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 
 /* ===== BOOKINGS ===== */
 async function renderBookings() {
-  const section = document.getElementById("bookings-section");
   const tbody = document.getElementById("bookingsTableBody");
-  if (!section || !tbody) return;
+  if (!tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
   const res = await apiRequest("bookings/all") || {};
@@ -100,9 +95,10 @@ async function renderBookings() {
       <td>${b.time || "-"}</td>
       <td>${b.space || "-"}</td>
       <td>${b.status || "Pending"}</td>
-      <td>
+      <td class="action-buttons">
         <button onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
         <button onclick="updateBookingStatus('${b._id}','Cancelled')">❌</button>
+        <button onclick="deleteBooking('${b._id}')">🗑️</button>
       </td>
     </tr>
   `).join('');
@@ -114,11 +110,16 @@ async function updateBookingStatus(id, status) {
   renderBookings();
 }
 
+async function deleteBooking(id) {
+  if (!confirm("Delete this booking?")) return;
+  await apiRequest(`bookings/${id}`, "DELETE");
+  renderBookings();
+}
+
 /* ===== ORDERS ===== */
 async function renderOrders() {
-  const section = document.getElementById("orders-section");
   const tbody = document.getElementById("ordersTableBody");
-  if (!section || !tbody) return;
+  if (!tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
   const res = await apiRequest("orders") || {};
@@ -130,8 +131,12 @@ async function renderOrders() {
   }
 
   tbody.innerHTML = orders.map(o => {
-    const itemPurchased = o.primaryItem || o.items?.[0]?.name || "—";
-   const customer = o.userId || "—"
+    // Show ALL items bought instead of just one
+    const itemsList = Array.isArray(o.items)
+      ? o.items.map(i => i.name || "Unnamed").join(", ")
+      : (o.primaryItem || "—");
+
+    const customer = o.user?.username || o.userId || "—";
     const total = o.totalPrice ? `₦${Number(o.totalPrice).toLocaleString()}` : "₦0";
     const status = o.status || "Pending";
     const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
@@ -139,18 +144,21 @@ async function renderOrders() {
     return `
       <tr>
         <td><strong>${customer}</strong></td>
-        <td>${itemPurchased}</td>
+        <td>${itemsList}</td>
         <td>${total}</td>
         <td><span class="status-badge status-${status.toLowerCase()}">${status}</span></td>
         <td>${date}</td>
-        <td>
-          <button class="action-btn complete" onclick="updateOrderStatus('${o._id}','completed')">✅</button>
-          <button class="action-btn pending" onclick="updateOrderStatus('${o._id}','in-progress')">⏳</button>
+        <td class="action-buttons">
+          <button onclick="updateOrderStatus('${o._id}','completed')">✅</button>
+          <button onclick="updateOrderStatus('${o._id}','in-progress')">⏳</button>
+          <button onclick="deleteOrder('${o._id}')">🗑️</button>
         </td>
       </tr>
     `;
   }).join('');
 }
+
+
 
 async function updateOrderStatus(id, status) {
   if (!confirm(`Change order status to "${status}"?`)) return;
@@ -158,12 +166,16 @@ async function updateOrderStatus(id, status) {
   renderOrders();
 }
 
+async function deleteOrder(id) {
+  if (!confirm("Delete this order?")) return;
+  await apiRequest(`orders/${id}`, "DELETE");
+  renderOrders();
+}
 
 /* ===== FEEDBACK ===== */
 async function renderFeedback() {
-  const section = document.getElementById("feedback-section");
   const grid = document.getElementById("feedbackGrid");
-  if (!section || !grid) return;
+  if (!grid) return;
 
   grid.innerHTML = `<p>⏳ Loading...</p>`;
   const res = await apiRequest("feedback") || {};
@@ -197,11 +209,14 @@ async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
 
-  const user = JSON.parse(localStorage.getItem("fullUser") || "{}");
-  const welcome = document.getElementById("welcomeMessage");
-  if (welcome) welcome.textContent = `Welcome back, ${user.username || "User"} 👋`;
+  // Fetch user info from backend
+  const userRes = await apiRequest("auth/me");
+  const username = userRes?.user?.username || "User";
 
-  // Load default section (bookings)
+  const welcome = document.getElementById("welcomeMessage");
+  if (welcome) welcome.textContent = `Welcome back, ${username} 👋`;
+
+  // Load default section
   await renderBookings();
   document.getElementById("bookings-section")?.classList.add("active");
 }
