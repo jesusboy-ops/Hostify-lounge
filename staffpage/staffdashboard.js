@@ -131,7 +131,7 @@ async function renderOrders() {
 
   tbody.innerHTML = orders.map(o => {
     const itemPurchased = o.primaryItem || o.items?.[0]?.name || "—";
-    const customer = o.customerName || o.userId?.username || o.user?.name || "—";
+   const customer = o.userId || "—"
     const total = o.totalPrice ? `₦${Number(o.totalPrice).toLocaleString()}` : "₦0";
     const status = o.status || "Pending";
     const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
