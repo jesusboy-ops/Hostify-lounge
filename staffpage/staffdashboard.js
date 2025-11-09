@@ -27,8 +27,7 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
     });
 
     const data = await res.json();
-    if (!res.ok)
-      throw new Error(data.message || `Request failed: ${res.status}`);
+    if (!res.ok) throw new Error(data.message || `Request failed: ${res.status}`);
     return data;
   } catch (err) {
     console.error(`API Error (${endpoint}):`, err);
@@ -52,6 +51,7 @@ navItems.forEach((item) => {
     if (sectionId === "bookings-section") renderBookings();
     else if (sectionId === "orders-section") renderOrders();
     else if (sectionId === "feedback-section") renderFeedback();
+    else if (sectionId === "users-section") renderUsers();
 
     if (window.innerWidth <= 768) {
       document.getElementById("sidebar").classList.remove("visible");
@@ -92,23 +92,19 @@ async function renderBookings() {
   tbody.innerHTML = bookings
     .map(
       (b) => `
-    <tr>
-      <td>${b.customerName || "-"}</td>
-      <td>${b.date || "-"}</td>
-      <td>${b.time || "-"}</td>
-      <td>${b.space || "-"}</td>
-      <td>${b.status || "Pending"}</td>
-      <td class="action-buttons">
-        <button onclick="updateBookingStatus('${
-          b._id
-        }','Confirmed')">✅</button>
-        <button onclick="updateBookingStatus('${
-          b._id
-        }','Cancelled')">❌</button>
-        <button onclick="deleteBooking('${b._id}')">🗑️</button>
-      </td>
-    </tr>
-  `
+      <tr>
+        <td>${b.customerName || "-"}</td>
+        <td>${b.date || "-"}</td>
+        <td>${b.time || "-"}</td>
+        <td>${b.space || "-"}</td>
+        <td>${b.status || "Pending"}</td>
+        <td class="action-buttons">
+          <button onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
+          <button onclick="updateBookingStatus('${b._id}','Cancelled')">❌</button>
+          <button onclick="deleteBooking('${b._id}')">🗑️</button>
+        </td>
+      </tr>
+    `
     )
     .join("");
 }
@@ -141,20 +137,13 @@ async function renderOrders() {
 
   tbody.innerHTML = orders
     .map((o) => {
-      // Show ALL items bought instead of just one
       const itemsList = Array.isArray(o.items)
         ? o.items.map((i) => i.name || "Unnamed").join(", ")
         : o.primaryItem || "—";
 
       const customer =
-        o.customerName ||
-        o.userId?.username ||
-        o.userId?.name ||
-        o.userId?.email ||
-        "—";
-      const total = o.totalPrice
-        ? `₦${Number(o.totalPrice).toLocaleString()}`
-        : "₦0";
+        o.customerName || o.userId?.username || o.userId?.name || o.userId?.email || "—";
+      const total = o.totalPrice ? `₦${Number(o.totalPrice).toLocaleString()}` : "₦0";
       const status = o.status || "Pending";
       const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
 
@@ -166,12 +155,8 @@ async function renderOrders() {
         <td><span class="status-badge status-${status.toLowerCase()}">${status}</span></td>
         <td>${date}</td>
         <td class="action-buttons">
-          <button onclick="updateOrderStatus('${
-            o._id
-          }','completed')">✅</button>
-          <button onclick="updateOrderStatus('${
-            o._id
-          }','in-progress')">⏳</button>
+          <button onclick="updateOrderStatus('${o._id}','completed')">✅</button>
+          <button onclick="updateOrderStatus('${o._id}','in-progress')">⏳</button>
           <button onclick="deleteOrder('${o._id}')">🗑️</button>
         </td>
       </tr>
@@ -209,19 +194,17 @@ async function renderFeedback() {
   grid.innerHTML = feedback
     .map(
       (f) => `
-    <div class="feedback-card">
-      <div class="feedback-header">
-        <span class="feedback-name">${f.name || "Anonymous"}</span>
-        <button class="delete-feedback" onclick="deleteFeedback('${
-          f._id
-        }')">🗑️</button>
-      </div>
-      <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(
+      <div class="feedback-card">
+        <div class="feedback-header">
+          <span class="feedback-name">${f.name || "Anonymous"}</span>
+          <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
+        </div>
+        <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(
         5 - (f.rating || 0)
       )}</div>
-      <p class="feedback-comment">${f.comment || ""}</p>
-    </div>
-  `
+        <p class="feedback-comment">${f.comment || ""}</p>
+      </div>
+    `
     )
     .join("");
 }
@@ -232,19 +215,46 @@ async function deleteFeedback(id) {
   renderFeedback();
 }
 
+async function renderUsers() {
+  const tbody = document.getElementById("usersTableBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="4">⏳ Loading...</td></tr>`;
+
+  const res = await apiRequest("users/all"); 
+  const users = res?.data || []; 
+
+  if (!users.length) {
+    tbody.innerHTML = `<tr><td colspan="4">No users found</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = users
+    .map(
+      (u) => `
+      <tr>
+        <td>${u.name || "-"}</td>
+        <td>${u.username || "-"}</td>
+        <td>${u.email?.replace("@gmail.com", "") || "-"}</td>
+        <td>${u.phone || "-"}</td>
+      </tr>
+    `
+    )
+    .join("");
+}
+
+
 /* ===== DASHBOARD INIT ===== */
 async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
 
-  // Use stored user info instead of calling /auth/me
   const userData = JSON.parse(localStorage.getItem("userData") || "{}");
   const username = userData.username || "User";
 
   const welcome = document.getElementById("welcomeMessage");
   if (welcome) welcome.textContent = `Welcome back, ${username} 👋`;
 
-  // Load default section
   await renderBookings();
   document.getElementById("bookings-section")?.classList.add("active");
 }

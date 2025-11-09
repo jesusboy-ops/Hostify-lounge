@@ -23,6 +23,7 @@
       <div class="nav-item" data-section="bookings"><span class="nav-item-icon">📅</span><span>Bookings</span></div>
       <div class="nav-item" data-section="orders"><span class="nav-item-icon">🍽️</span><span>Orders</span></div>
       <div class="nav-item" data-section="feedback"><span class="nav-item-icon">💬</span><span>Feedback</span></div>
+      <div class="nav-item" data-section="users"><span class="nav-item-icon">👥</span><span>Users</span></div>
       <div class="nav-item" data-section="reports"><span class="nav-item-icon">📝</span><span>Reports</span></div>
     </nav>
     <div class="sidebar-footer">
@@ -37,7 +38,7 @@
       <p>Manage your restaurant operations efficiently</p>
     </div>
 
-
+    <!-- Dashboard Section -->
     <div class="content-section active" id="dashboard-section">
       <div class="section-header">
         <h3>Dashboard Overview</h3>
@@ -50,6 +51,7 @@
       </div>
     </div>
 
+    <!-- Bookings Section -->
     <div class="content-section" id="bookings-section">
       <div class="section-header">
         <h3>Restaurant Bookings</h3>
@@ -72,21 +74,8 @@
       </div>
     </div>
 
-    
-    
-
-    
-    <div class="content-section" id="feedback-section">
-      <div class="section-header">
-        <h3>Customer Feedback</h3>
-        <p>Reviews and comments from your customers</p>
-      </div>
-      <div id="feedbackGrid" class="card-grid"></div>
-    </div>
-
-    
-     <!-- Orders Section -->
-    <section id="orders-section" class="content-section">
+    <!-- Orders Section -->
+    <div class="content-section" id="orders-section">
       <div class="section-header">
         <h3>Orders</h3>
         <p>All food and service orders</p>
@@ -95,15 +84,45 @@
         <table>
           <thead>
             <tr>
-              <th>Order Id</th>
+              <th>Customer</th>
               <th>Items Bought</th>
-              <th>Total price</th>
+              <th>Total Price</th>
               <th>Status</th>
               <th>Date</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody id="ordersTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Feedback Section -->
+    <div class="content-section" id="feedback-section">
+      <div class="section-header">
+        <h3>Customer Feedback</h3>
+        <p>Reviews and comments from your customers</p>
+      </div>
+      <div id="feedbackGrid" class="card-grid"></div>
+    </div>
+
+    <!-- Users Section -->
+    <div class="content-section" id="users-section">
+      <div class="section-header">
+        <h3>All Users</h3>
+        <p>View credentials of all registered users</p>
+      </div>
+      <div class="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Phone</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody"></tbody>
         </table>
       </div>
     </div>
