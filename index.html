@@ -1,199 +1,28 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hostify Lounge</title>
-  <link href="https://fonts.googleapis.com/css?family=Roboto|Inter|Poppins&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/1/styles.css" />
-  <link rel="stylesheet" href="/auth-modal.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hostify Lounge</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto|Inter|Poppins&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/1/styles.css" />
+<link rel="stylesheet" href="/auth-modal.css" />
+<style>
+
+</style>
 </head>
 <body>
-<style>
-  /* === OVERLAY === */
-.auth-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(5px);
-  background: rgba(0, 0, 0, 0.8);
-  z-index: 9999;
-}
-
-.auth-modal.active {
-  display: flex;
-}
-
-/* === MAIN BOX === */
-.auth-box {
-  width: 400px;
-  background: #1e1e1e;
-  padding: 35px;
-  border-radius: 14px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.6);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  animation: slideUp 0.4s ease;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(50px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* === CLOSE BUTTON === */
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 18px;
-  font-size: 22px;
-  color: #aaa;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.close-btn:hover {
-  color: #f39c12;
-}
-
-/* === BRAND + TABS === */
-.auth-brand {
-  font-size: 28px;
-  font-weight: 700;
-  color: #f39c12;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.tabs {
-  display: flex;
-  justify-content: center;
-  border-bottom: 1px solid #333;
-  margin-bottom: 25px;
-}
-.tab {
-  flex: 1;
-  text-align: center;
-  background: transparent;
-  border: none;
-  padding: 12px;
-  color: #aaa;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.3s;
-  border-bottom: 2px solid transparent;
-}
-.tab.active {
-  color: #fff;
-  border-bottom-color: #f39c12;
-}
-
-/* === FORM === */
-.auth-form {
-  display: none;
-  flex-direction: column;
-  gap: 14px;
-}
-.auth-form.active {
-  display: flex;
-}
-.auth-form input,
-.auth-form select {
-  padding: 12px;
-  border-radius: 8px;
-  border: none;
-  outline: none;
-  background: #2b2b2b;
-  color: white;
-  font-size: 15px;
-}
-.auth-form select {
-  cursor: pointer;
-}
-
-.auth-btn {
-  background: #f39c12;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.auth-btn:hover {
-  background: #d88700;
-}
-
-/* === SIDE IMAGE === */
-.auth-side-image {
-  display: none;
-}
-@media (min-width: 900px) {
-  .auth-modal {
-    justify-content: center;
-  }
-  .auth-box {
-    width: 420px;
-    margin-right: 20px;
-  }
-  .auth-side-image {
-    display: block;
-    height: 100%;
-  }
-  .auth-side-image img {
-    width: 400px;
-    height: 100vh;
-    object-fit: cover;
-    border-radius: 12px;
-  }
-}
-
-/* === BUTTONS OUTSIDE MODAL === */
-.auth-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  color: #1e1e1e;
-}
-.auth-buttons button {
-  background: #f39c12;
-  border: none;
-  color: rgb(15, 15, 15);
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.3s;
-}
-.auth-buttons button:hover {
-  background: #d88700;
-}
-
-
-  </style>
-</style>
   <!-- Navbar -->
   <nav class="navbar">
-    <div class="logo">
-      <img src="/images/hcre-4-11.png" alt="Hostify Logo" />
+    <div class="logo" onclick="window.location.href='../index.html'" style="cursor:pointer;">
+      <img src="../images/hcre-4-11.png" alt="Hostify Logo" />
     </div>
-
     <ul class="nav-links">
       <li><a href="../index.html">Home</a></li>
-      <li><a href="/bookingspage/booking.html">Book</a></li>
-      <li><a href="/menu/menu.html">Menu</a></li>
-      <li><a href="/feedbacks page/feedback.html">Feedback</a></li>
-     
+      <li><a href="../bookingspage/booking.html">Book</a></li>
+      <li><a href="../menu/menu.html">Menu</a></li>
+      <li><a href="../feedbacks page/feedback.html">Feedback</a></li>
     </ul>
-
     <div class="nav-actions">
       <div id="authButtons" class="auth-buttons"></div>
       <button id="themeToggle" class="theme-toggle">🌙</button>
@@ -201,111 +30,114 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <h1>EXPERIENCE YOUR PERFECT LOUNGE WITH HOSTIFY</h1>
-    <p>Relax, unwind and enjoy premium services in our luxurious lounge</p>
-    <div class="contain">
-         <button onclick="window.location.href='/bookingspage/booking.html'" class="book-btn">Book A Space</button>
-    <button onclick="window.location.href='/menu/menu.html'" class="book-btn">Order Food & Drinks</button>
-    <button onclick="window.location.href='/feedbacks page/feedback.html'" class="book-btn">Give Feedback</button>
-    </div>
-  </section>
+  <main>
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>EXPERIENCE YOUR PERFECT LOUNGE WITH HOSTIFY</h1>
+      <p>Relax, unwind and enjoy premium services in our luxurious lounge</p>
+      <div class="contain">
+        <button onclick="window.location.href='../bookingspage/booking.html'" class="book-btn">Book A Space</button>
+        <button onclick="window.location.href='../menu/menu.html'" class="book-btn">Order Food & Drinks</button>
+        <button onclick="window.location.href='../feedbacks page/feedback.html'" class="book-btn">Give Feedback</button>
+      </div>
+    </section>
 
-  <!-- Image Section -->
-  <section class="image-section">
-    <div class="image-card">
-      <img src="/images/image_fx-12-1-17.png" alt="Service 1" />
-      <p>Experience comfort in beautifully designed spaces</p>
-    </div>
-    <div class="image-card">
-      <img src="/images/image_fx-13-1-20.png" alt="Service 2" />
-      <p>Enjoy 5-star hospitality that puts you first</p>
-    </div>
-    <div class="image-card">
-      <img src="/images/image_fx-14-1-23.png" alt="Service 3" />
-      <p>Savour delicious meals and perfectly made drinks</p>
-    </div>
-  </section>
+    <!-- Image Section -->
+    <section class="image-section">
+      <div class="image-card">
+        <img src="../images/image_fx-12-1-17.png" alt="Service 1" />
+        <p>Experience comfort in beautifully designed spaces</p>
+      </div>
+      <div class="image-card">
+        <img src="../images/image_fx-13-1-20.png" alt="Service 2" />
+        <p>Enjoy 5-star hospitality that puts you first</p>
+      </div>
+      <div class="image-card">
+        <img src="../images/image_fx-14-1-23.png" alt="Service 3" />
+        <p>Savour delicious meals and perfectly made drinks</p>
+      </div>
+    </section>
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-left">
-        <img src="/images/hcre-4-11.png" alt="Hostify Logo" />
+        <img src="../images/hcre-4-11.png" alt="Hostify Logo" />
         <p>Hostify Lounge</p>
       </div>
-
-  
-
       <div class="footer-contact">
-        <p>📞 08119131004,07082583603</p>
-        <p>✉️ lounge@hostify.com</p>
+        <p>📞 08119131004, 07082583603</p>
+        <p>✉️ hostify@fastservice.com</p>
       </div>
     </div>
-
     <div class="footer-bottom">
       <p>© 2025 Hostify Lounge. All rights reserved.</p>
     </div>
   </footer>
 
-
-
-
-<!-- AUTH MODAL -->
-<div id="authModal" class="auth-modal">
-  <div class="auth-box">
-    <button id="authCloseBtn" class="close-btn">×</button>
-
-    <div class="auth-header">
-      <div class="auth-brand">Hostify</div>
-      <div class="tabs">
-        <button class="auth-tab active" data-tab="login">Login</button>
-        <button class="auth-tab" data-tab="signup">Sign Up</button>
+  <!-- AUTH MODAL -->
+  <div id="authModal" class="auth-modal">
+    <div class="auth-box">
+      <button id="authCloseBtn" class="close-btn">×</button>
+      <div class="auth-header">
+        <div class="auth-brand">Hostify</div>
+        <div class="tabs">
+          <button class="auth-tab active" data-tab="login">Login</button>
+          <button class="auth-tab" data-tab="signup">Sign Up</button>
+        </div>
       </div>
-    </div>
 
-    <!-- LOGIN FORM -->
-    <form id="loginForm" class="auth-form active">
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="password" name="password" placeholder="Password" required />
-      <select name="role" required>
-        <option value="">-- Select Role --</option>
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-        <option value="staff">Staff</option>
-      </select>
-      <button type="submit" class="auth-btn">Login</button>
-    </form>
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="auth-form active">
+        <input type="email" name="email" placeholder="Email" required />
+        <div class="password-wrapper">
+          <input type="password" name="password" placeholder="Password" required minlength="8" />
+          <button type="button" class="toggle-password" onclick="togglePassword(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+        </div>
+        <select name="role" required>
+          <option value="">-- Select Role --</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Staff</option>
+        </select>
+        <button type="submit" class="auth-btn">Login</button>
+      </form>
 
-    <!-- SIGNUP FORM -->
-    <form id="signupForm" class="auth-form">
-      <input type="text" name="name" placeholder="Full Name" required />
-      <input type="text" name="username" placeholder="Username" required />
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="text" name="phone" placeholder="Phone Number" required />
-      <input type="password" name="password" placeholder="Password" required />
-      <select name="role" required>
-        <option value="">-- Select Role --</option>
-        <option value="user">User</option>
-        <option value="admin">Admin</option>
-        <option value="staff">Staff</option>
-      </select>
-      <button type="submit" class="auth-btn">Sign Up</button>
-    </form>
-  </div>
-</div>
-
-
-
- 
-</div>
-
+      <!-- SIGNUP FORM -->
+      <form id="signupForm" class="auth-form">
+        <input type="text" name="name" placeholder="Full Name" required />
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="text" name="phone" placeholder="Phone Number" required />
+        <div class="password-wrapper">
+          <input type="password" name="password" placeholder="Password" required minlength="8" />
+          <button type="button" class="toggle-password" onclick="togglePassword(this)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+        </div>
+        <select name="role" required>
+          <option value="">-- Select Role --</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Staff</option>
+        </select>
+        <button type="submit" class="auth-btn">Sign Up</button>
+      </form>
     </div>
   </div>
 
   <script src="/1/script.js"></script>
   <script src="../auth.js"></script>
-
+  <script>
+  </script>
 </body>
 </html>

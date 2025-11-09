@@ -23,3 +23,41 @@ const menuToggle = document.querySelector('.menu-toggle');
       themeToggle.textContent = isDark ? '🌙' : '🔆';
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
     });
+
+    
+  function togglePassword(el) {
+  const input = el.previousElementSibling;
+  input.type = input.type === "password" ? "text" : "password";
+}
+
+function validateForm(form) {
+  const email = form.email.value.trim();
+  const password = form.password.value.trim();
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const uppercasePattern = /[A-Z]/;
+
+  if (!emailPattern.test(email)) {
+    alert("Invalid email address!");
+    return false;
+  }
+
+  if (password.length < 8) {
+    alert("Password must be at least 8 characters long!");
+    return false;
+  }
+
+  if (!uppercasePattern.test(password)) {
+    alert("Password must include at least one uppercase letter (A–Z)!");
+    return false;
+  }
+
+  return true;
+}
+
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+  if (!validateForm(this)) e.preventDefault();
+});
+
+document.getElementById("signupForm").addEventListener("submit", function(e) {
+  if (!validateForm(this)) e.preventDefault();
+});

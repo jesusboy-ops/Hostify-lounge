@@ -357,7 +357,9 @@ footer {
 body.dark footer {
   background: #2b3148;
 }
-
+body.dark .cart-item {
+   background: #2b3148;
+}
 .order-overlay {
   display: none;
   position: fixed;

@@ -79,7 +79,6 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 /* ===== BOOKINGS ===== */
-/* ===== BOOKINGS ===== */
 async function renderBookings() {
   const tbody = document.getElementById("bookingsTableBody");
   if (!tbody) return;
@@ -134,7 +133,6 @@ async function deleteBooking(id) {
   if (res) document.getElementById(`booking-${id}`)?.remove();
 }
 
-
 /* ===== ORDERS ===== */
 async function renderOrders() {
   const tbody = document.getElementById("ordersTableBody");
@@ -167,8 +165,8 @@ async function renderOrders() {
         <td class="status">${status}</td>
         <td>${date}</td>
         <td class="action-buttons">
-          <button onclick="updateOrderStatus('${o._id}', 'COMPLETED')">✅</button>
-          <button onclick="updateOrderStatus('${o._id}', 'IN PROGRESS')">⏳</button>
+          <button onclick="updateOrderStatus('${o._id}', 'Completed')">✅</button>
+          <button onclick="updateOrderStatus('${o._id}', 'In Progress')">⏳</button>
           <button onclick="updateOrderStatus('${o._id}', 'Cancelled')">❌</button>
           <button onclick="deleteOrder('${o._id}')">🗑️</button>
         </td>
@@ -209,7 +207,7 @@ async function renderFeedback() {
   grid.innerHTML = feedback.map((f) => `
     <div class="feedback-card" id="feedback-${f._id}">
       <div class="feedback-header">
-        <span class="feedback-name">${f.userId?.name || f.userId?.email || "—"}</span>
+        <span class="feedback-name">${f.userId?.name || f.userId?.email || "Anonymous"}</span>
         <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
       </div>
       <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(5 - (f.rating || 0))}</div>
@@ -256,23 +254,23 @@ async function deleteUser(id) {
   if (res) document.getElementById(`user-${id}`)?.remove();
 }
 
-/* ===== INIT DASHBOARD ===== */async function initDashboard() {
+/* ===== INIT DASHBOARD ===== */
+async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
 
-  // Fetch user data from localStorage or backend
   let userData = JSON.parse(localStorage.getItem("userData") || "{}");
 
-  // If no username stored, fetch from backend to ensure accuracy
-  if (!userData.username) {
+  // Fetch user details if not available
+  if (!userData || !userData.username) {
     try {
-      const res = await fetch("https://hostify-app-nnod.vercel.app/api/users/me", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const res = await fetch(`${API_BASE}/users/me`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
+
       if (res.ok) {
-        userData = await res.json();
+        const data = await res.json();
+        userData = data.user || data;
         localStorage.setItem("userData", JSON.stringify(userData));
       }
     } catch (err) {
@@ -280,28 +278,25 @@ async function deleteUser(id) {
     }
   }
 
-  // Display username
-  const username = userData.username || userData.name || "User";
-  const welcome = document.getElementById("welcomeMessage");
-  if (welcome) welcome.textContent = `Welcome back, ${username} 👋`;
+  // ✅ Role-based welcome message
+  const name = userData.name || userData.username || userData.email?.split("@")[0] || "User";
+  const firstName = name.split(" ")[0];
+  const capitalized = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+  const role = (userData.role || "user").toLowerCase();
 
-  // Load section data dynamically
+  const welcome = document.getElementById("welcomeMessage");
+  if (welcome) {
+    welcome.textContent = role === "admin"
+      ? `Welcome Admin, ${capitalized} 👋`
+      : `Welcome Back, ${capitalized} 👋`;
+  }
+
+  // Load current section
   const activeSection = document.querySelector(".content-section.active")?.id;
   switch (activeSection) {
-    case "bookings-section":
-      renderBookings();
-      break;
-    case "orders-section":
-      renderOrders();
-      break;
-    case "feedback-section":
-      renderFeedback();
-      break;
-    case "users-section":
-      renderUsers();
-      break;
+    case "bookings-section": renderBookings(); break;
+    case "orders-section": renderOrders(); break;
+    case "feedback-section": renderFeedback(); break;
+    case "users-section": renderUsers(); break;
   }
 }
-
-
-document.addEventListener("DOMContentLoaded", initDashboard);
