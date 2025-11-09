@@ -214,18 +214,17 @@ async function deleteFeedback(id) {
   await apiRequest(`feedback/${id}`, "DELETE");
   renderFeedback();
 }
-
 async function renderUsers() {
   const tbody = document.getElementById("usersTableBody");
   if (!tbody) return;
 
-  tbody.innerHTML = `<tr><td colspan="4">⏳ Loading...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="5">⏳ Loading...</td></tr>`; // updated colspan
 
   const res = await apiRequest("users/all"); 
   const users = res?.data || []; 
 
   if (!users.length) {
-    tbody.innerHTML = `<tr><td colspan="4">No users found</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5">No users found</td></tr>`; // updated colspan
     return;
   }
 
@@ -237,11 +236,13 @@ async function renderUsers() {
         <td>${u.username || "-"}</td>
         <td>${u.email?.replace("@gmail.com", "") || "-"}</td>
         <td>${u.phone || "-"}</td>
+        <td>${u.role || "-"}</td>
       </tr>
     `
     )
     .join("");
 }
+
 
 
 /* ===== DASHBOARD INIT ===== */
