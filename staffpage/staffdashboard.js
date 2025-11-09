@@ -31,6 +31,7 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
     return data;
   } catch (err) {
     console.error(`API Error (${endpoint}):`, err);
+    alert(err.message || "An error occurred.");
     return null;
   }
 }
@@ -48,10 +49,12 @@ navItems.forEach((item) => {
     const sectionId = `${item.dataset.section}-section`;
     document.getElementById(sectionId)?.classList.add("active");
 
-    if (sectionId === "bookings-section") renderBookings();
-    else if (sectionId === "orders-section") renderOrders();
-    else if (sectionId === "feedback-section") renderFeedback();
-    else if (sectionId === "users-section") renderUsers();
+    switch (sectionId) {
+      case "bookings-section": renderBookings(); break;
+      case "orders-section": renderOrders(); break;
+      case "feedback-section": renderFeedback(); break;
+      case "users-section": renderUsers(); break;
+    }
 
     if (window.innerWidth <= 768) {
       document.getElementById("sidebar").classList.remove("visible");
@@ -81,44 +84,44 @@ async function renderBookings() {
   if (!tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
-  const res = (await apiRequest("bookings/all")) || {};
-  const bookings = res.bookings || [];
+  const res = await apiRequest("bookings/all");
+  const bookings = res?.bookings || [];
 
   if (!bookings.length) {
     tbody.innerHTML = `<tr><td colspan="6">No bookings found</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = bookings
-    .map(
-      (b) => `
-      <tr>
-        <td>${b.customerName || "-"}</td>
-        <td>${b.date || "-"}</td>
-        <td>${b.time || "-"}</td>
-        <td>${b.space || "-"}</td>
-        <td>${b.status || "Pending"}</td>
-        <td class="action-buttons">
-          <button onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
-          <button onclick="updateBookingStatus('${b._id}','Cancelled')">❌</button>
-          <button onclick="deleteBooking('${b._id}')">🗑️</button>
-        </td>
-      </tr>
-    `
-    )
-    .join("");
+  tbody.innerHTML = bookings.map((b) => `
+    <tr id="booking-${b._id}">
+      <td>${b.customerName || "-"}</td>
+      <td>${b.date || "-"}</td>
+      <td>${b.time || "-"}</td>
+      <td>${b.space || "-"}</td>
+      <td class="status">${b.status || "Pending"}</td>
+      <td class="action-buttons">
+        <button onclick="updateBookingStatus('${b._id}', 'Confirmed')">✅</button>
+        <button onclick="updateBookingStatus('${b._id}', 'Pending')">⏳</button>
+        <button onclick="updateBookingStatus('${b._id}', 'Cancelled')">❌</button>
+        <button onclick="deleteBooking('${b._id}')">🗑️</button>
+      </td>
+    </tr>
+  `).join("");
 }
 
 async function updateBookingStatus(id, status) {
   if (!confirm(`Change booking status to "${status}"?`)) return;
-  await apiRequest(`bookings/update/${id}`, "PUT", { status });
-  renderBookings();
+  const res = await apiRequest(`bookings/update/${id}`, "PUT", { status });
+  if (res) {
+    const row = document.getElementById(`booking-${id}`);
+    if (row) row.querySelector(".status").textContent = status;
+  }
 }
 
 async function deleteBooking(id) {
   if (!confirm("Delete this booking?")) return;
-  await apiRequest(`bookings/${id}`, "DELETE");
-  renderBookings();
+  const res = await apiRequest(`bookings/${id}`, "DELETE");
+  if (res) document.getElementById(`booking-${id}`)?.remove();
 }
 
 /* ===== ORDERS ===== */
@@ -127,54 +130,55 @@ async function renderOrders() {
   if (!tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
-  const res = (await apiRequest("orders")) || {};
-  const orders = res.orders || [];
+  const res = await apiRequest("orders");
+  const orders = res?.orders || [];
 
   if (!orders.length) {
     tbody.innerHTML = `<tr><td colspan="6">No orders found</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = orders
-    .map((o) => {
-      const itemsList = Array.isArray(o.items)
-        ? o.items.map((i) => i.name || "Unnamed").join(", ")
-        : o.primaryItem || "—";
+  tbody.innerHTML = orders.map((o) => {
+    const itemsList = Array.isArray(o.items)
+      ? o.items.map((i) => i.name || "Unnamed").join(", ")
+      : o.primaryItem || "—";
 
-      const customer =
-         o.userId?.name || o.userId?.email || "—";
-      const total = o.totalPrice ? `₦${Number(o.totalPrice).toLocaleString()}` : "₦0";
-      const status = o.status || "Pending";
-      const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
+    const customer = o.userId?.name || o.userId?.email || "—";
+    const total = o.totalPrice ? `₦${Number(o.totalPrice).toLocaleString()}` : "₦0";
+    const status = o.status || "Pending";
+    const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
 
-      return `
-      <tr>
+    return `
+      <tr id="order-${o._id}">
         <td><strong>${customer}</strong></td>
         <td>${itemsList}</td>
         <td>${total}</td>
-        <td><span class="status-badge status-${status.toLowerCase()}">${status}</span></td>
+        <td class="status">${status}</td>
         <td>${date}</td>
         <td class="action-buttons">
-          <button onclick="updateOrderStatus('${o._id}','completed')">✅</button>
-          <button onclick="updateOrderStatus('${o._id}','in-progress')">⏳</button>
+          <button onclick="updateOrderStatus('${o._id}', 'Confirmed')">✅</button>
+          <button onclick="updateOrderStatus('${o._id}', 'Pending')">⏳</button>
+          <button onclick="updateOrderStatus('${o._id}', 'Cancelled')">❌</button>
           <button onclick="deleteOrder('${o._id}')">🗑️</button>
         </td>
       </tr>
     `;
-    })
-    .join("");
+  }).join("");
 }
 
 async function updateOrderStatus(id, status) {
   if (!confirm(`Change order status to "${status}"?`)) return;
-  await apiRequest(`orders/update/${id}`, "PUT", { status });
-  renderOrders();
+  const res = await apiRequest(`orders/update/${id}`, "PUT", { status });
+  if (res) {
+    const row = document.getElementById(`order-${id}`);
+    if (row) row.querySelector(".status").textContent = status;
+  }
 }
 
 async function deleteOrder(id) {
   if (!confirm("Delete this order?")) return;
-  await apiRequest(`orders/${id}`, "DELETE");
-  renderOrders();
+  const res = await apiRequest(`orders/${id}`, "DELETE");
+  if (res) document.getElementById(`order-${id}`)?.remove();
 }
 
 /* ===== FEEDBACK ===== */
@@ -183,70 +187,65 @@ async function renderFeedback() {
   if (!grid) return;
 
   grid.innerHTML = `<p>⏳ Loading...</p>`;
-  const res = (await apiRequest("feedback")) || {};
-  const feedback = res.feedbacks || [];
+  const res = await apiRequest("feedback");
+  const feedback = res?.feedbacks || [];
 
   if (!feedback.length) {
     grid.innerHTML = `<p>No feedback found.</p>`;
     return;
   }
 
-  grid.innerHTML = feedback
-    .map(
-      (f) => `
-      <div class="feedback-card">
-        <div class="feedback-header">
-          <span class="feedback-name">${ f.userId?.name || f.userId?.email || "—"}</span>
-          <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
-        </div>
-        <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(
-        5 - (f.rating || 0)
-      )}</div>
-        <p class="feedback-comment">${f.comment || ""}</p>
+  grid.innerHTML = feedback.map((f) => `
+    <div class="feedback-card" id="feedback-${f._id}">
+      <div class="feedback-header">
+        <span class="feedback-name">${f.userId?.name || f.userId?.email || "—"}</span>
+        <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
       </div>
-    `
-    )
-    .join("");
+      <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(5 - (f.rating || 0))}</div>
+      <p class="feedback-comment">${f.comment || ""}</p>
+    </div>
+  `).join("");
 }
 
 async function deleteFeedback(id) {
   if (!confirm("Delete this feedback?")) return;
-  await apiRequest(`feedback/${id}`, "DELETE");
-  renderFeedback();
+  const res = await apiRequest(`feedback/${id}`, "DELETE");
+  if (res) document.getElementById(`feedback-${id}`)?.remove();
 }
+
+/* ===== USERS ===== */
 async function renderUsers() {
   const tbody = document.getElementById("usersTableBody");
   if (!tbody) return;
 
-  tbody.innerHTML = `<tr><td colspan="5">⏳ Loading...</td></tr>`; // updated colspan
-
-  const res = await apiRequest("users/all"); 
-  const users = res?.data || []; 
+  tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
+  const res = await apiRequest("users/all");
+  const users = res?.data || [];
 
   if (!users.length) {
-    tbody.innerHTML = `<tr><td colspan="5">No users found</td></tr>`; // updated colspan
+    tbody.innerHTML = `<tr><td colspan="6">No users found</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = users
-    .map(
-      (u) => `
-      <tr>
-        <td>${u.name || "-"}</td>
-        <td>${u.username || "-"}</td>
-        <td>${u.email?.replace("@gmail.com", "") || "-"}</td>
-        <td>${u.phone || "-"}</td>
-        <td>${u.role || "-"}</td>
-      </tr>
-    `
-    )
-    .join("");
+  tbody.innerHTML = users.map((u) => `
+    <tr id="user-${u._id}">
+      <td>${u.name || "-"}</td>
+      <td>${u.username || "-"}</td>
+      <td>${u.email?.replace("@gmail.com", "") || "-"}</td>
+      <td>${u.phone || "-"}</td>
+      <td>${u.role || "-"}</td>
+      <td><button onclick="deleteUser('${u._id}')">🗑️</button></td>
+    </tr>
+  `).join("");
 }
 
+async function deleteUser(id) {
+  if (!confirm("Delete this user?")) return;
+  const res = await apiRequest(`users/${id}`, "DELETE");
+  if (res) document.getElementById(`user-${id}`)?.remove();
+}
 
-
-
-/* ===== DASHBOARD INIT ===== */
+/* ===== INIT DASHBOARD ===== */
 async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
@@ -257,10 +256,13 @@ async function initDashboard() {
   const welcome = document.getElementById("welcomeMessage");
   if (welcome) welcome.textContent = `Welcome back, ${username} 👋`;
 
-  // Only render the section that is active by default in HTML
   const activeSection = document.querySelector(".content-section.active")?.id;
-  if (activeSection === "bookings-section") await renderBookings();
-  else if (activeSection === "orders-section") await renderOrders();
-  else if (activeSection === "feedback-section") await renderFeedback();
-  else if (activeSection === "users-section") await renderUsers();
+  switch (activeSection) {
+    case "bookings-section": renderBookings(); break;
+    case "orders-section": renderOrders(); break;
+    case "feedback-section": renderFeedback(); break;
+    case "users-section": renderUsers(); break;
+  }
 }
+
+document.addEventListener("DOMContentLoaded", initDashboard);
