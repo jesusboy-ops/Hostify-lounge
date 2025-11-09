@@ -27,7 +27,8 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.message || `Request failed: ${res.status}`);
+    if (!res.ok)
+      throw new Error(data.message || `Request failed: ${res.status}`);
     return data;
   } catch (err) {
     console.error(`API Error (${endpoint}):`, err);
@@ -39,10 +40,10 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
 const navItems = document.querySelectorAll(".nav-item");
 const contentSections = document.querySelectorAll(".content-section");
 
-navItems.forEach(item => {
+navItems.forEach((item) => {
   item.addEventListener("click", () => {
-    navItems.forEach(i => i.classList.remove("active"));
-    contentSections.forEach(sec => sec.classList.remove("active"));
+    navItems.forEach((i) => i.classList.remove("active"));
+    contentSections.forEach((sec) => sec.classList.remove("active"));
 
     item.classList.add("active");
     const sectionId = `${item.dataset.section}-section`;
@@ -80,7 +81,7 @@ async function renderBookings() {
   if (!tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
-  const res = await apiRequest("bookings/all") || {};
+  const res = (await apiRequest("bookings/all")) || {};
   const bookings = res.bookings || [];
 
   if (!bookings.length) {
@@ -88,7 +89,9 @@ async function renderBookings() {
     return;
   }
 
-  tbody.innerHTML = bookings.map(b => `
+  tbody.innerHTML = bookings
+    .map(
+      (b) => `
     <tr>
       <td>${b.customerName || "-"}</td>
       <td>${b.date || "-"}</td>
@@ -96,12 +99,18 @@ async function renderBookings() {
       <td>${b.space || "-"}</td>
       <td>${b.status || "Pending"}</td>
       <td class="action-buttons">
-        <button onclick="updateBookingStatus('${b._id}','Confirmed')">✅</button>
-        <button onclick="updateBookingStatus('${b._id}','Cancelled')">❌</button>
+        <button onclick="updateBookingStatus('${
+          b._id
+        }','Confirmed')">✅</button>
+        <button onclick="updateBookingStatus('${
+          b._id
+        }','Cancelled')">❌</button>
         <button onclick="deleteBooking('${b._id}')">🗑️</button>
       </td>
     </tr>
-  `).join('');
+  `
+    )
+    .join("");
 }
 
 async function updateBookingStatus(id, status) {
@@ -122,7 +131,7 @@ async function renderOrders() {
   if (!tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
-  const res = await apiRequest("orders") || {};
+  const res = (await apiRequest("orders")) || {};
   const orders = res.orders || [];
 
   if (!orders.length) {
@@ -130,18 +139,26 @@ async function renderOrders() {
     return;
   }
 
-  tbody.innerHTML = orders.map(o => {
-    // Show ALL items bought instead of just one
-    const itemsList = Array.isArray(o.items)
-      ? o.items.map(i => i.name || "Unnamed").join(", ")
-      : (o.primaryItem || "—");
+  tbody.innerHTML = orders
+    .map((o) => {
+      // Show ALL items bought instead of just one
+      const itemsList = Array.isArray(o.items)
+        ? o.items.map((i) => i.name || "Unnamed").join(", ")
+        : o.primaryItem || "—";
 
-    const customer = o.user?.username || o.userId || "—";
-    const total = o.totalPrice ? `₦${Number(o.totalPrice).toLocaleString()}` : "₦0";
-    const status = o.status || "Pending";
-    const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
+      const customer =
+        o.customerName ||
+        o.userId?.username ||
+        o.userId?.name ||
+        o.userId?.email ||
+        "—";
+      const total = o.totalPrice
+        ? `₦${Number(o.totalPrice).toLocaleString()}`
+        : "₦0";
+      const status = o.status || "Pending";
+      const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
 
-    return `
+      return `
       <tr>
         <td><strong>${customer}</strong></td>
         <td>${itemsList}</td>
@@ -149,16 +166,19 @@ async function renderOrders() {
         <td><span class="status-badge status-${status.toLowerCase()}">${status}</span></td>
         <td>${date}</td>
         <td class="action-buttons">
-          <button onclick="updateOrderStatus('${o._id}','completed')">✅</button>
-          <button onclick="updateOrderStatus('${o._id}','in-progress')">⏳</button>
+          <button onclick="updateOrderStatus('${
+            o._id
+          }','completed')">✅</button>
+          <button onclick="updateOrderStatus('${
+            o._id
+          }','in-progress')">⏳</button>
           <button onclick="deleteOrder('${o._id}')">🗑️</button>
         </td>
       </tr>
     `;
-  }).join('');
+    })
+    .join("");
 }
-
-
 
 async function updateOrderStatus(id, status) {
   if (!confirm(`Change order status to "${status}"?`)) return;
@@ -178,7 +198,7 @@ async function renderFeedback() {
   if (!grid) return;
 
   grid.innerHTML = `<p>⏳ Loading...</p>`;
-  const res = await apiRequest("feedback") || {};
+  const res = (await apiRequest("feedback")) || {};
   const feedback = res.feedbacks || [];
 
   if (!feedback.length) {
@@ -186,16 +206,24 @@ async function renderFeedback() {
     return;
   }
 
-  grid.innerHTML = feedback.map(f => `
+  grid.innerHTML = feedback
+    .map(
+      (f) => `
     <div class="feedback-card">
       <div class="feedback-header">
         <span class="feedback-name">${f.name || "Anonymous"}</span>
-        <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
+        <button class="delete-feedback" onclick="deleteFeedback('${
+          f._id
+        }')">🗑️</button>
       </div>
-      <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(5 - (f.rating || 0))}</div>
+      <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(
+        5 - (f.rating || 0)
+      )}</div>
       <p class="feedback-comment">${f.comment || ""}</p>
     </div>
-  `).join('');
+  `
+    )
+    .join("");
 }
 
 async function deleteFeedback(id) {
@@ -209,9 +237,9 @@ async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
 
-  // Fetch user info from backend
-  const userRes = await apiRequest("auth/me");
-  const username = userRes?.user?.username || "User";
+  // Use stored user info instead of calling /auth/me
+  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+  const username = userData.username || "User";
 
   const welcome = document.getElementById("welcomeMessage");
   if (welcome) welcome.textContent = `Welcome back, ${username} 👋`;
