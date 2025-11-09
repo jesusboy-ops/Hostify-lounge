@@ -142,7 +142,7 @@ async function renderOrders() {
         : o.primaryItem || "—";
 
       const customer =
-        o.customerName || o.userId?.username || o.userId?.name || o.userId?.email || "—";
+         o.userId?.name || o.userId?.email || "—";
       const total = o.totalPrice ? `₦${Number(o.totalPrice).toLocaleString()}` : "₦0";
       const status = o.status || "Pending";
       const date = o.createdAt ? new Date(o.createdAt).toLocaleString() : "—";
@@ -196,7 +196,7 @@ async function renderFeedback() {
       (f) => `
       <div class="feedback-card">
         <div class="feedback-header">
-          <span class="feedback-name">${f.name || "Anonymous"}</span>
+          <span class="feedback-name">${ f.userId?.name || f.userId?.email || "—"}</span>
           <button class="delete-feedback" onclick="deleteFeedback('${f._id}')">🗑️</button>
         </div>
         <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(
@@ -245,6 +245,7 @@ async function renderUsers() {
 
 
 
+
 /* ===== DASHBOARD INIT ===== */
 async function initDashboard() {
   const token = checkAuth();
@@ -256,8 +257,10 @@ async function initDashboard() {
   const welcome = document.getElementById("welcomeMessage");
   if (welcome) welcome.textContent = `Welcome back, ${username} 👋`;
 
-  await renderBookings();
-  document.getElementById("bookings-section")?.classList.add("active");
+  // Only render the section that is active by default in HTML
+  const activeSection = document.querySelector(".content-section.active")?.id;
+  if (activeSection === "bookings-section") await renderBookings();
+  else if (activeSection === "orders-section") await renderOrders();
+  else if (activeSection === "feedback-section") await renderFeedback();
+  else if (activeSection === "users-section") await renderUsers();
 }
-
-document.addEventListener("DOMContentLoaded", initDashboard);
