@@ -39,6 +39,8 @@ body.dark {
   color: white;
   text-decoration: none;
   transition: color 0.3s;
+  font-size: 22px;
+  font-weight: 600;
 }
 .nav-links a:hover {
   color: #e9d368;

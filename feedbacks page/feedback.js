@@ -1,4 +1,13 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const logo = document.getElementById("homeLogo");
+  if (logo) {
+    logo.addEventListener("click", () => {
+      window.location.href = "../index.html";
+    });
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
   const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
   // Elements

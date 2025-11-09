@@ -5,7 +5,14 @@ menuToggle?.addEventListener("click", () => {
   navLinks.classList.toggle("active");
   menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
 });
-
+document.addEventListener("DOMContentLoaded", () => {
+  const logo = document.getElementById("homeLogo");
+  if (logo) {
+    logo.addEventListener("click", () => {
+      window.location.href = "../index.html";
+    });
+  }
+});
 const themeToggle = document.getElementById("themeToggle");
 themeToggle?.addEventListener("click", () => {
   document.body.classList.toggle("dark");
