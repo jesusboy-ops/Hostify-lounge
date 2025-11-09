@@ -248,6 +248,7 @@ img {
   padding: 20px 10px;
   font-size: 14px;
   transition: background 0.4s ease, color 0.4s ease;
+  font-weight: 800;
 }
 .footer-content {
   display: flex;
@@ -266,6 +267,7 @@ img {
   margin: 0;
   font-size: 14px;
   color: #e9d368;
+  font-weight: 800;
 }
 .footer-links a {
   color: white;
@@ -281,9 +283,13 @@ img {
 }
 .footer-bottom {
   text-align: center;
+  position: relative;
+  bottom: 40px;
+   margin: 0 auto;
   margin-top: 10px;
-  font-size: 12px;
+  font-size: 15px;
   color: #e9d368;
+  font-weight: 800;
 }
 
 body.dark-mode {
@@ -367,6 +373,10 @@ body.dark-mode .footer-bottom {
     max-width: 1000px;
     margin: 0 auto;
     gap: 20px;
+  }
+  .footer-bottom{
+    position: relative;
+    bottom: 0px;
   }
   .navbar {
     padding: 15px 20px;

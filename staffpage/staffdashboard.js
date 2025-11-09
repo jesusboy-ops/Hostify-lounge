@@ -8,7 +8,7 @@ function getAuthToken() {
 function checkAuth() {
   const token = getAuthToken();
   if (!token) {
-    window.location.href = "../auth/login.html";
+    window.location.href = "../index.html";
     return null;
   }
   return token;
