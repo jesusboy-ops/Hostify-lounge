@@ -79,6 +79,7 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 });
 
 /* ===== BOOKINGS ===== */
+/* ===== BOOKINGS ===== */
 async function renderBookings() {
   const tbody = document.getElementById("bookingsTableBody");
   if (!tbody) return;
@@ -102,7 +103,7 @@ async function renderBookings() {
       <td class="action-buttons">
         <button onclick="updateBookingStatus('${b._id}', 'Confirmed')">✅</button>
         <button onclick="updateBookingStatus('${b._id}', 'Pending')">⏳</button>
-        <button onclick="updateBookingStatus('${b._id}', 'Cancelled')">❌</button>
+        <button onclick="cancelBooking('${b._id}')">❌</button>
         <button onclick="deleteBooking('${b._id}')">🗑️</button>
       </td>
     </tr>
@@ -118,11 +119,21 @@ async function updateBookingStatus(id, status) {
   }
 }
 
+async function cancelBooking(id) {
+  if (!confirm("Cancel this booking?")) return;
+  const res = await apiRequest(`bookings/cancel/${id}`, "PATCH");
+  if (res) {
+    const row = document.getElementById(`booking-${id}`);
+    if (row) row.querySelector(".status").textContent = "Cancelled";
+  }
+}
+
 async function deleteBooking(id) {
   if (!confirm("Delete this booking?")) return;
-  const res = await apiRequest(`bookings/${id}`, "DELETE");
+  const res = await apiRequest(`bookings/delete/${id}`, "DELETE");
   if (res) document.getElementById(`booking-${id}`)?.remove();
 }
+
 
 /* ===== ORDERS ===== */
 async function renderOrders() {
@@ -156,8 +167,8 @@ async function renderOrders() {
         <td class="status">${status}</td>
         <td>${date}</td>
         <td class="action-buttons">
-          <button onclick="updateOrderStatus('${o._id}', 'Confirmed')">✅</button>
-          <button onclick="updateOrderStatus('${o._id}', 'Pending')">⏳</button>
+          <button onclick="updateOrderStatus('${o._id}', 'COMPLETED')">✅</button>
+          <button onclick="updateOrderStatus('${o._id}', 'IN PROGRESS')">⏳</button>
           <button onclick="updateOrderStatus('${o._id}', 'Cancelled')">❌</button>
           <button onclick="deleteOrder('${o._id}')">🗑️</button>
         </td>
@@ -168,7 +179,7 @@ async function renderOrders() {
 
 async function updateOrderStatus(id, status) {
   if (!confirm(`Change order status to "${status}"?`)) return;
-  const res = await apiRequest(`orders/update/${id}`, "PUT", { status });
+  const res = await apiRequest(`orders/${id}`, "PATCH", { status });
   if (res) {
     const row = document.getElementById(`order-${id}`);
     if (row) row.querySelector(".status").textContent = status;
@@ -177,7 +188,7 @@ async function updateOrderStatus(id, status) {
 
 async function deleteOrder(id) {
   if (!confirm("Delete this order?")) return;
-  const res = await apiRequest(`orders/${id}`, "DELETE");
+  const res = await apiRequest(`orders/delete/${id}`, "DELETE");
   if (res) document.getElementById(`order-${id}`)?.remove();
 }
 
@@ -209,7 +220,7 @@ async function renderFeedback() {
 
 async function deleteFeedback(id) {
   if (!confirm("Delete this feedback?")) return;
-  const res = await apiRequest(`feedback/${id}`, "DELETE");
+  const res = await apiRequest(`feedback/delete/${id}`, "DELETE");
   if (res) document.getElementById(`feedback-${id}`)?.remove();
 }
 
@@ -245,24 +256,52 @@ async function deleteUser(id) {
   if (res) document.getElementById(`user-${id}`)?.remove();
 }
 
-/* ===== INIT DASHBOARD ===== */
-async function initDashboard() {
+/* ===== INIT DASHBOARD ===== */async function initDashboard() {
   const token = checkAuth();
   if (!token) return;
 
-  const userData = JSON.parse(localStorage.getItem("userData") || "{}");
-  const username = userData.username || "User";
+  // Fetch user data from localStorage or backend
+  let userData = JSON.parse(localStorage.getItem("userData") || "{}");
 
+  // If no username stored, fetch from backend to ensure accuracy
+  if (!userData.username) {
+    try {
+      const res = await fetch("https://hostify-app-nnod.vercel.app/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.ok) {
+        userData = await res.json();
+        localStorage.setItem("userData", JSON.stringify(userData));
+      }
+    } catch (err) {
+      console.error("Failed to fetch user info:", err);
+    }
+  }
+
+  // Display username
+  const username = userData.username || userData.name || "User";
   const welcome = document.getElementById("welcomeMessage");
   if (welcome) welcome.textContent = `Welcome back, ${username} 👋`;
 
+  // Load section data dynamically
   const activeSection = document.querySelector(".content-section.active")?.id;
   switch (activeSection) {
-    case "bookings-section": renderBookings(); break;
-    case "orders-section": renderOrders(); break;
-    case "feedback-section": renderFeedback(); break;
-    case "users-section": renderUsers(); break;
+    case "bookings-section":
+      renderBookings();
+      break;
+    case "orders-section":
+      renderOrders();
+      break;
+    case "feedback-section":
+      renderFeedback();
+      break;
+    case "users-section":
+      renderUsers();
+      break;
   }
 }
+
 
 document.addEventListener("DOMContentLoaded", initDashboard);
