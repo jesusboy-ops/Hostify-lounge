@@ -261,7 +261,7 @@ img {
 }
 .footer-left img {
   height: 30px;
-  margin-bottom: 5px;
+  margin-bottom: -5px;
 }
 .footer-left p {
   margin: 0;
