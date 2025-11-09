@@ -145,3 +145,11 @@ document.addEventListener("DOMContentLoaded", () => {
     menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
   });
 });
+document.addEventListener("DOMContentLoaded", () => {
+  const logo = document.getElementById("homeLogo");
+  if (logo) {
+    logo.addEventListener("click", () => {
+      window.location.href = "../index.html";
+    });
+  }
+});

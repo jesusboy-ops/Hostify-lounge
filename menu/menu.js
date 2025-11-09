@@ -10,9 +10,18 @@ menuToggle.addEventListener("click", () => {
   const themeToggle = document.getElementById("themeToggle");
   themeToggle?.addEventListener("click", () => {
     document.body.classList.toggle("dark");
-    themeToggle.textContent = document.body.classList.contains("dark") ? "🔆" : "🌙";
+    themeToggle.textContent = document.body.classList.contains("dark") ? "🌙" : "🔆";
   });
   
+  document.addEventListener("DOMContentLoaded", () => {
+  const logo = document.getElementById("homeLogo");
+  if (logo) {
+    logo.addEventListener("click", () => {
+      window.location.href = "../index.html";
+    });
+  }
+});
+
 const menuItems = [
 
   {
