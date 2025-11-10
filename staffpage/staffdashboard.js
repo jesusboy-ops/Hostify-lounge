@@ -232,7 +232,7 @@ async function renderOrders() {
       <td class="status">${o.status || "Pending"}</td>
       <td>${o.createdAt ? new Date(o.createdAt).toLocaleString() : "—"}</td>
       <td class="action-buttons">
-        <button onclick="updateOrderStatus('${o._id}', 'Completed')">✅</button>
+        <button onclick="updateOrderStatus('${o._id}', 'Ready/pickup')">✅</button>
         <button onclick="updateOrderStatus('${o._id}', 'In Progress')">⏳</button>
         <button onclick="updateOrderStatus('${o._id}', 'Cancelled')">❌</button>
         <button onclick="deleteOrder('${o._id}')">🗑️</button>
