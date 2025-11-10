@@ -88,7 +88,7 @@ img {
 }
 
 .auth-btn {
-  background: #f39c12;
+  background:#E9D368;
   border: none;
   padding: 12px;
   border-radius: 6px;
@@ -323,16 +323,16 @@ footer {
 .auth-form select { cursor: pointer; }
 
 .auth-btn {
-  background: #f39c12;
+  background: #E9D368;
   border: none;
   padding: 12px;
   border-radius: 8px;
-  color: white;
+  color: rgb(6, 6, 6);
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s;
 }
-.auth-btn:hover { background: #d88700; }
+.auth-btn:hover { background: #ecde9b; }
 
 /* === PASSWORD WRAPPER === */
 .password-wrapper {
@@ -354,7 +354,7 @@ footer {
 .toggle-password svg {
   width: 20px;
   height: 20px;
-  fill: #f39c12;
+  fill: #E9D368;
   transition: 0.3s;
 }
 .toggle-password:hover svg {
@@ -382,8 +382,8 @@ footer {
   gap: 10px;
   color: #1e1e1e;
 }
-.auth-buttons button {
-  background: #f39c12;
+.auth-buttons button  {
+  background: #E9D368;
   border: none;
   color: rgb(15, 15, 15);
   padding: 10px 16px;
@@ -588,6 +588,7 @@ body.dark-mode .footer-bottom {
   align-items: center;
   gap: 20px;
 }
+
 
 @media (max-width: 768px) {
   .nav-links {

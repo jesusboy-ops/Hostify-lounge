@@ -101,8 +101,8 @@
 }
 
 .auth-tab.active {
-  background: #f39c12;
-  border-color: #f39c12;
+  background: #E9D368;
+  border-color: #E9D368;
   color: #000;
 }
 
@@ -128,7 +128,7 @@
 }
 
 .auth-input-group:focus-within {
-  border-color: #f39c12;
+  border-color: #E9D368;
   box-shadow: 0 0 15px rgba(243, 156, 18, 0.3);
 }
 
@@ -160,7 +160,7 @@
 }
 
 .auth-submit-btn {
-  background: #f39c12;
+  background: #E9D368;
   border: none;
   padding: 14px;
   border-radius: 30px;
@@ -173,7 +173,7 @@
 }
 
 .auth-submit-btn:hover {
-  background: #e8890b;
+  background: #E9D368;
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(243, 156, 18, 0.4);
 }
@@ -207,12 +207,12 @@
 }
 
 .auth-nav-btn:hover {
-  background: #f39c12;
+  background: #a29e89;
   color: #000;
 }
 
 .auth-nav-btn.signup {
-  background: #f39c12;
+  background: #E9D368;
   color: #000;
 }
 
