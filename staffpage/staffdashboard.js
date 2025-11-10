@@ -60,13 +60,11 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
       if (!token) throw new Error("No auth token found");
       headers["Authorization"] = `Bearer ${token}`;
     }
-
     const res = await fetch(`${API_BASE}/${endpoint}`, {
       method,
       headers,
       body: body ? JSON.stringify(body) : null
     });
-
     const data = await res.json().catch(() => null);
     if (!res.ok) throw new Error(data?.message || `Request failed: ${res.status}`);
     return data;
@@ -126,17 +124,16 @@ function setupSidebar() {
   const navItems = document.querySelectorAll(".nav-item");
   const contentSections = document.querySelectorAll(".content-section");
 
-  navItems.forEach((item) => {
+  navItems.forEach(item => {
     item.addEventListener("click", async () => {
       navItems.forEach(i => i.classList.remove("active"));
       contentSections.forEach(sec => sec.classList.remove("active"));
 
       item.classList.add("active");
       const sectionId = `${item.dataset.section}-section`;
-      const section = document.getElementById(sectionId);
-      section?.classList.add("active");
+      document.getElementById(sectionId)?.classList.add("active");
 
-      // Render corresponding data
+      // Render data for this section
       switch (sectionId) {
         case "bookings-section": await renderBookings(); break;
         case "orders-section": await renderOrders(); break;
@@ -144,7 +141,6 @@ function setupSidebar() {
         case "users-section": await renderUsers(); break;
       }
 
-      // Close sidebar on mobile
       if (window.innerWidth <= 768) {
         document.getElementById("sidebar")?.classList.remove("visible");
         document.getElementById("menuToggle")?.classList.remove("active");
@@ -177,7 +173,7 @@ async function renderBookings() {
   const bookings = res?.bookings || [];
   if (!bookings.length) return tbody.innerHTML = `<tr><td colspan="6">No bookings found</td></tr>`;
 
-  const reversed = [...bookings].reverse(); // newest first
+  const reversed = [...bookings].reverse();
   tbody.innerHTML = reversed.map(b => `
     <tr id="booking-${b._id}">
       <td>${b.customerName || "-"}</td>
@@ -186,10 +182,10 @@ async function renderBookings() {
       <td>${b.space || "-"}</td>
       <td class="status">${b.status || "Pending"}</td>
       <td class="action-buttons">
-        <button onclick="updateBookingStatus('${b._id}', 'Confirmed')">✅</button>
-        <button onclick="updateBookingStatus('${b._id}', 'Pending')">⏳</button>
-        <button onclick="cancelBooking('${b._id}')">❌</button>
-        <button onclick="deleteBooking('${b._id}')">🗑️</button>
+        <button data-booking-action="confirm" data-id="${b._id}">✅</button>
+        <button data-booking-action="pending" data-id="${b._id}">⏳</button>
+        <button data-booking-action="cancel" data-id="${b._id}">❌</button>
+        <button data-booking-action="delete" data-id="${b._id}">🗑️</button>
       </td>
     </tr>
   `).join("");
@@ -212,10 +208,10 @@ async function renderOrders() {
       <td class="status">${o.status || "Pending"}</td>
       <td>${o.createdAt ? new Date(o.createdAt).toLocaleString() : "—"}</td>
       <td class="action-buttons">
-        <button onclick="updateOrderStatus('${o._id}', 'Completed')">✅</button>
-        <button onclick="updateOrderStatus('${o._id}', 'In Progress')">⏳</button>
-        <button onclick="updateOrderStatus('${o._id}', 'Cancelled')">❌</button>
-        <button onclick="deleteOrder('${o._id}')">🗑️</button>
+        <button data-order-action="completed" data-id="${o._id}">✅</button>
+        <button data-order-action="inprogress" data-id="${o._id}">⏳</button>
+        <button data-order-action="cancelled" data-id="${o._id}">❌</button>
+        <button data-order-action="delete" data-id="${o._id}">🗑️</button>
       </td>
     </tr>
   `).join("");
@@ -234,7 +230,7 @@ async function renderFeedback() {
     <div class="feedback-card" id="feedback-${f._id}">
       <div class="feedback-header">
         <span>${f.userId?.name || f.userId?.email || "Anonymous"}</span>
-        <button onclick="deleteFeedback('${f._id}')">🗑️</button>
+        <button data-feedback-action="delete" data-id="${f._id}">🗑️</button>
       </div>
       <div class="rating-stars">${"★".repeat(f.rating || 0)}${"☆".repeat(5 - (f.rating || 0))}</div>
       <p>${f.comment || ""}</p>
@@ -262,12 +258,49 @@ async function renderUsers() {
         <td>${u.phone || "-"}</td>
         <td>${u.role || "-"}</td>
         <td class="action-buttons">
-          <button onclick="deleteUser('${u._id}')">🗑️</button>
+          <button data-user-action="delete" data-id="${u._id}">🗑️</button>
         </td>
       </tr>
     `;
   }).join("");
 }
+
+// ===== Event Delegation for Dynamic Buttons =====
+document.addEventListener("click", async (e) => {
+  const target = e.target;
+
+  // Bookings
+  if (target.matches("button[data-booking-action]")) {
+    const id = target.dataset.id;
+    const action = target.dataset.bookingAction;
+    if (action === "confirm") await updateBookingStatus(id, "Confirmed");
+    else if (action === "pending") await updateBookingStatus(id, "Pending");
+    else if (action === "cancel") await cancelBooking(id);
+    else if (action === "delete") await deleteBooking(id);
+  }
+
+  // Orders
+  if (target.matches("button[data-order-action]")) {
+    const id = target.dataset.id;
+    const action = target.dataset.orderAction;
+    if (action === "completed") await updateOrderStatus(id, "Completed");
+    else if (action === "inprogress") await updateOrderStatus(id, "In Progress");
+    else if (action === "cancelled") await updateOrderStatus(id, "Cancelled");
+    else if (action === "delete") await deleteOrder(id);
+  }
+
+  // Feedback
+  if (target.matches("button[data-feedback-action='delete']")) {
+    const id = target.dataset.id;
+    await deleteFeedback(id);
+  }
+
+  // Users
+  if (target.matches("button[data-user-action='delete']")) {
+    const id = target.dataset.id;
+    await deleteUser(id);
+  }
+});
 
 // ===== Dashboard Initialization =====
 async function initDashboard() {
@@ -289,7 +322,9 @@ async function initDashboard() {
     return;
   }
 
-  const fullName = (user.name || user.username || user.email?.split("@")[0] || "User").replace(/^\w/, c => c.toUpperCase());
+  const fullName = (user.name || user.username || user.email?.split("@")[0] || "User")
+    .replace(/^\w/, c => c.toUpperCase());
+
   const welcome = document.getElementById("welcomeMessage");
   if (welcome) welcome.textContent = `Welcome ${fullName}`;
 
