@@ -209,7 +209,7 @@ loginForm?.addEventListener("submit", async e => {
     showMessage(`Welcome ${userInfo.name || userInfo.username || "User"}!`, "success");
     setTimeout(() => {
       if (userInfo.role === "admin") window.location.href = "/staffpage/staffDashboard.html";
-      else window.location.href = "/index.html";
+      else window.location.href = "../index.html";
     }, 800);
   } catch (err) {
     showMessage(err.message || "Login failed!", "error");

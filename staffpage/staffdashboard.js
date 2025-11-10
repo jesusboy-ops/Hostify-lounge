@@ -280,23 +280,38 @@ async function renderFeedback() {
 async function renderUsers() {
   const tbody = document.getElementById("usersTableBody");
   if (!tbody) return;
+
+  // Show loading placeholder
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
+
+  // Fetch all users
   const res = await apiRequest("users/all");
   const users = res?.data || [];
-  if (!users.length) return tbody.innerHTML = `<tr><td colspan="6">No users found</td></tr>`;
 
-  tbody.innerHTML = users.map((u) => `
-    <tr id="user-${u._id}">
-      <td>${u.name || "-"}</td>
-      <td>${u.username || "-"}</td>
-      <td>${u.email?.replace("@gmail.com", "") || "-"}</td>
-      <td>${u.phone || "-"}</td>
-      <td>${u.role || "-"}</td>
-      <td class="action-buttons">
-        <button onclick="deleteUser('${u._id}')">🗑️</button>
-      </td>
-    </tr>
-  `).join("");
+  // If no users found
+  if (!users.length) {
+    tbody.innerHTML = `<tr><td colspan="6">No users found</td></tr>`;
+    return;
+  }
+
+  // Populate users table
+  tbody.innerHTML = users.map(u => {
+    const displayName = u.name ? u.name.replace(/^\w/, c => c.toUpperCase()) : "-";
+    const email = u.email || "-";
+
+    return `
+      <tr id="user-${u._id}">
+        <td>${displayName}</td>
+        <td>${u.username || "-"}</td>
+        <td>${email}</td>
+        <td>${u.phone || "-"}</td>
+        <td>${u.role || "-"}</td>
+        <td class="action-buttons">
+          <button onclick="deleteUser('${u._id}')">🗑️</button>
+        </td>
+      </tr>
+    `;
+  }).join("");
 }
 
 
@@ -321,7 +336,7 @@ async function initDashboard() {
     .replace(/^\w/, c => c.toUpperCase());
 
   const welcome = document.getElementById("welcomeMessage");
-  if (welcome) welcome.textContent = `Welcome Back, ${fullName} 👋`;
+  if (welcome) welcome.textContent = `Welcome  ${fullName} `;
 
   setupSidebar();
   setupLogout();

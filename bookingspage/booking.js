@@ -68,8 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (overlay) overlay.style.display = "flex";
 
-    const token = localStorage.getItem("authToken"); // optional if backend uses auth
-    const userEmail = localStorage.getItem("userEmail"); // get email from login
+    const token = localStorage.getItem("authToken"); 
+    const userEmail = localStorage.getItem("userEmail"); 
 
     const payload = {
       customerName: document.getElementById("fullName")?.value.trim(),
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
       time: document.getElementById("time")?.value,
       people: Number(document.getElementById("guests")?.value),
       specialRequests: document.getElementById("specialRequests")?.value.trim(),
-      email: userEmail || `guest${Date.now()}@example.com` // always provide email
+      email: userEmail || `guest${Date.now()}@example.com` 
     };
 
     // Validate required fields

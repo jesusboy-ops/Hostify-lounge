@@ -89,10 +89,10 @@ nav {
 }
 
 .feedback__section {
-  max-width: 500px;
+  max-width: 900px;
   margin: 0 auto 60px;
   text-align: center;
-  
+ 
 }
 
 .feedback__title {
@@ -121,7 +121,7 @@ nav {
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 25px;
-  text-align: center;
+  text-align: left;
   color: #f8f9fa;
 }
 
@@ -139,7 +139,7 @@ nav {
 
 .feedback__stars {
   display: flex;
-  justify-content: center;
+  justify-content: left;
   gap: 10px;
   font-size: 50px;
 }
