@@ -1,6 +1,6 @@
 const API_BASE = "https://hostify-app-nnod.vercel.app/api";
 
-
+// ===== Auth Helpers =====
 function getAuthToken() {
   try { return localStorage.getItem("authToken"); } catch { return null; }
 }
@@ -8,6 +8,7 @@ function clearAuthToken() {
   try { localStorage.removeItem("authToken"); } catch {}
 }
 
+// ===== Fullscreen Spinner =====
 function showFullScreenSpinner(show = true, text = "Loading...") {
   let spinner = document.getElementById("fullScreenSpinner");
   if (!spinner) {
@@ -50,24 +51,24 @@ function showFullScreenSpinner(show = true, text = "Loading...") {
   spinner.style.display = show ? "flex" : "none";
 }
 
-
+// ===== API Request Wrapper =====
 async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
   try {
     const headers = { "Content-Type": "application/json" };
     if (auth) {
       const token = getAuthToken();
-      if (!token) throw new Error("No auth token");
+      if (!token) throw new Error("No auth token found");
       headers["Authorization"] = `Bearer ${token}`;
     }
 
     const res = await fetch(`${API_BASE}/${endpoint}`, {
       method,
       headers,
-      body: body ? JSON.stringify(body) : null,
+      body: body ? JSON.stringify(body) : null
     });
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || `Request failed: ${res.status}`);
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.message || `Request failed: ${res.status}`);
     return data;
   } catch (err) {
     console.error(`API Error (${endpoint}):`, err);
@@ -76,7 +77,7 @@ async function apiRequest(endpoint, method = "GET", body = null, auth = true) {
   }
 }
 
-
+// ===== Fetch Current User =====
 async function fetchCurrentUser() {
   const token = getAuthToken();
   if (!token) return null;
@@ -120,27 +121,30 @@ async function fetchCurrentUser() {
   };
 }
 
-
+// ===== Sidebar Setup =====
 function setupSidebar() {
   const navItems = document.querySelectorAll(".nav-item");
   const contentSections = document.querySelectorAll(".content-section");
 
   navItems.forEach((item) => {
-    item.addEventListener("click", () => {
+    item.addEventListener("click", async () => {
       navItems.forEach(i => i.classList.remove("active"));
       contentSections.forEach(sec => sec.classList.remove("active"));
 
       item.classList.add("active");
       const sectionId = `${item.dataset.section}-section`;
-      document.getElementById(sectionId)?.classList.add("active");
+      const section = document.getElementById(sectionId);
+      section?.classList.add("active");
 
+      // Render corresponding data
       switch (sectionId) {
-        case "bookings-section": renderBookings(); break;
-        case "orders-section": renderOrders(); break;
-        case "feedback-section": renderFeedback(); break;
-        case "users-section": renderUsers(); break;
+        case "bookings-section": await renderBookings(); break;
+        case "orders-section": await renderOrders(); break;
+        case "feedback-section": await renderFeedback(); break;
+        case "users-section": await renderUsers(); break;
       }
 
+      // Close sidebar on mobile
       if (window.innerWidth <= 768) {
         document.getElementById("sidebar")?.classList.remove("visible");
         document.getElementById("menuToggle")?.classList.remove("active");
@@ -154,6 +158,7 @@ function setupSidebar() {
   });
 }
 
+// ===== Logout =====
 function setupLogout() {
   document.getElementById("logoutBtn")?.addEventListener("click", () => {
     if (confirm("Logout now?")) {
@@ -163,50 +168,7 @@ function setupLogout() {
   });
 }
 
-
-async function updateBookingStatus(id, status) {
-  if (!confirm(`Change booking status to "${status}"?`)) return;
-  const res = await apiRequest(`bookings/update/${id}`, "PUT", { status });
-  if (res) document.querySelector(`#booking-${id} .status`).textContent = status;
-}
-
-async function cancelBooking(id) {
-  if (!confirm("Cancel this booking?")) return;
-  const res = await apiRequest(`bookings/cancel/${id}`, "PATCH");
-  if (res) document.querySelector(`#booking-${id} .status`).textContent = "Cancelled";
-}
-
-async function deleteBooking(id) {
-  if (!confirm("Delete this booking?")) return;
-  const res = await apiRequest(`bookings/delete/${id}`, "DELETE");
-  if (res) document.getElementById(`booking-${id}`)?.remove();
-}
-
-async function updateOrderStatus(id, status) {
-  if (!confirm(`Change order status to "${status}"?`)) return;
-  const res = await apiRequest(`orders/${id}`, "PATCH", { status });
-  if (res) document.querySelector(`#order-${id} .status`).textContent = status;
-}
-
-async function deleteOrder(id) {
-  if (!confirm("Delete this order?")) return;
-  const res = await apiRequest(`orders/delete/${id}`, "DELETE");
-  if (res) document.getElementById(`order-${id}`)?.remove();
-}
-
-async function deleteFeedback(id) {
-  if (!confirm("Delete this feedback?")) return;
-  const res = await apiRequest(`feedback/delete/${id}`, "DELETE");
-  if (res) document.getElementById(`feedback-${id}`)?.remove();
-}
-
-async function deleteUser(id) {
-  if (!confirm("Delete this user?")) return;
-  const res = await apiRequest(`users/${id}`, "DELETE");
-  if (res) document.getElementById(`user-${id}`)?.remove();
-}
-
-
+// ===== Dashboard Render Functions =====
 async function renderBookings() {
   const tbody = document.getElementById("bookingsTableBody");
   if (!tbody) return;
@@ -215,7 +177,8 @@ async function renderBookings() {
   const bookings = res?.bookings || [];
   if (!bookings.length) return tbody.innerHTML = `<tr><td colspan="6">No bookings found</td></tr>`;
 
-  tbody.innerHTML = bookings.map((b) => `
+  const reversed = [...bookings].reverse(); // newest first
+  tbody.innerHTML = reversed.map(b => `
     <tr id="booking-${b._id}">
       <td>${b.customerName || "-"}</td>
       <td>${b.date || "-"}</td>
@@ -240,7 +203,8 @@ async function renderOrders() {
   const orders = res?.orders || [];
   if (!orders.length) return tbody.innerHTML = `<tr><td colspan="6">No orders found</td></tr>`;
 
-  tbody.innerHTML = orders.map((o) => `
+  const reversed = [...orders].reverse();
+  tbody.innerHTML = reversed.map(o => `
     <tr id="order-${o._id}">
       <td><strong>${o.userId?.name || o.userId?.email || "—"}</strong></td>
       <td>${Array.isArray(o.items) ? o.items.map(i => i.name).join(", ") : o.primaryItem || "—"}</td>
@@ -265,7 +229,8 @@ async function renderFeedback() {
   const feedback = res?.feedbacks || [];
   if (!feedback.length) return grid.innerHTML = `<p>No feedback found.</p>`;
 
-  grid.innerHTML = feedback.map((f) => `
+  const reversed = [...feedback].reverse();
+  grid.innerHTML = reversed.map(f => `
     <div class="feedback-card" id="feedback-${f._id}">
       <div class="feedback-header">
         <span>${f.userId?.name || f.userId?.email || "Anonymous"}</span>
@@ -280,25 +245,15 @@ async function renderFeedback() {
 async function renderUsers() {
   const tbody = document.getElementById("usersTableBody");
   if (!tbody) return;
-
-  // Show loading placeholder
   tbody.innerHTML = `<tr><td colspan="6">⏳ Loading...</td></tr>`;
-
-  // Fetch all users
   const res = await apiRequest("users/all");
   const users = res?.data || [];
+  if (!users.length) return tbody.innerHTML = `<tr><td colspan="6">No users found</td></tr>`;
 
-  // If no users found
-  if (!users.length) {
-    tbody.innerHTML = `<tr><td colspan="6">No users found</td></tr>`;
-    return;
-  }
-
-  // Populate users table
-  tbody.innerHTML = users.map(u => {
+  const reversed = [...users].reverse();
+  tbody.innerHTML = reversed.map(u => {
     const displayName = u.name ? u.name.replace(/^\w/, c => c.toUpperCase()) : "-";
     const email = u.email || "-";
-
     return `
       <tr id="user-${u._id}">
         <td>${displayName}</td>
@@ -314,9 +269,10 @@ async function renderUsers() {
   }).join("");
 }
 
-
+// ===== Dashboard Initialization =====
 async function initDashboard() {
   showFullScreenSpinner(true, "Loading dashboard...");
+
   const token = getAuthToken();
   if (!token) {
     window.location.href = "../index.html";
@@ -325,6 +281,7 @@ async function initDashboard() {
 
   const user = await fetchCurrentUser();
   showFullScreenSpinner(false);
+
   if (!user) {
     alert("Could not load user info. Please login again.");
     clearAuthToken();
@@ -332,22 +289,20 @@ async function initDashboard() {
     return;
   }
 
-  const fullName = (user.name || user.username || user.email?.split("@")[0] || "User")
-    .replace(/^\w/, c => c.toUpperCase());
-
+  const fullName = (user.name || user.username || user.email?.split("@")[0] || "User").replace(/^\w/, c => c.toUpperCase());
   const welcome = document.getElementById("welcomeMessage");
-  if (welcome) welcome.textContent = `Welcome  ${fullName} `;
+  if (welcome) welcome.textContent = `Welcome ${fullName}`;
 
   setupSidebar();
   setupLogout();
 
-  
+  // Render the default active section
   const activeSection = document.querySelector(".content-section.active")?.id;
   switch (activeSection) {
-    case "bookings-section": renderBookings(); break;
-    case "orders-section": renderOrders(); break;
-    case "feedback-section": renderFeedback(); break;
-    case "users-section": renderUsers(); break;
+    case "bookings-section": await renderBookings(); break;
+    case "orders-section": await renderOrders(); break;
+    case "feedback-section": await renderFeedback(); break;
+    case "users-section": await renderUsers(); break;
   }
 }
 

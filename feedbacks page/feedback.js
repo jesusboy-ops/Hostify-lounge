@@ -19,12 +19,10 @@ document.addEventListener("DOMContentLoaded", () => {
       pointer-events: none;
       transition: opacity 0.3s ease;
     }
-
     .spinner-overlay.active {
       opacity: 1;
       pointer-events: all;
     }
-
     .spinner {
       width: 60px;
       height: 60px;
@@ -33,15 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
+    @keyframes spin { to { transform: rotate(360deg); } }
     /* Dark mode compatibility */
-    body.dark .spinner-overlay {
-      background: rgba(0, 0, 0, 0.6);
-    }
+    body.dark .spinner-overlay { background: rgba(0, 0, 0, 0.6); }
   `;
   document.head.appendChild(spinnerStyle);
 
@@ -51,13 +43,8 @@ document.addEventListener("DOMContentLoaded", () => {
   spinnerOverlay.innerHTML = `<div class="spinner"></div>`;
   document.body.appendChild(spinnerOverlay);
 
-  function showSpinner() {
-    spinnerOverlay.classList.add("active");
-  }
-
-  function hideSpinner() {
-    spinnerOverlay.classList.remove("active");
-  }
+  const showSpinner = () => spinnerOverlay.classList.add("active");
+  const hideSpinner = () => spinnerOverlay.classList.remove("active");
 
   // === Elements ===
   const messageContainer = document.getElementById("messageContainer");
@@ -72,9 +59,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggle = document.getElementById("modeToggle");
   const menuToggle = document.getElementById("mobileToggle");
   const navLinks = document.getElementById("navCenter");
+  const logo = document.getElementById("homeLogo");
 
   let selectedRating = 0;
   let tempFeedbackData = {};
+
+  // --- Set light theme first ---
+  document.body.classList.remove("dark");
+  if (themeToggle) themeToggle.textContent = "🌙";
 
   // --- Helpers ---
   function showMessage(text, type = "info", duration = 2500) {
@@ -110,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function addFeedbackToDOM(feedback) {
     if (!feedbackList) return;
     if (feedbackList.querySelector("p")) feedbackList.innerHTML = "";
-
     const feedbackItem = document.createElement("div");
     feedbackItem.className = "feedback-item";
     feedbackItem.innerHTML = `
@@ -142,30 +133,38 @@ document.addEventListener("DOMContentLoaded", () => {
     if (nameModal) nameModal.style.display = "none";
   });
 
-  // --- Submit Feedback (with Spinner) ---
+  // --- Submit Feedback ---
   submitName?.addEventListener("click", async () => {
     const name = userNameInput?.value.trim();
     if (!name) return showMessage("Please enter your name!", "error");
 
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      showMessage("You must be logged in to submit feedback!", "error");
+      if (nameModal) nameModal.style.display = "none";
+      return;
+    }
+
     const feedbackData = { ...tempFeedbackData, name, date: new Date().toISOString() };
 
-    showSpinner(); // show spinner right after name input
+    showSpinner();
 
     try {
-      const token = localStorage.getItem("authToken");
-      const headers = { "Content-Type": "application/json" };
-      if (token) headers["Authorization"] = `Bearer ${token}`;
-
       const res = await fetch(`${API_BASE}/feedback/post`, {
         method: "POST",
-        headers,
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify(feedbackData)
       });
 
+      if (res.status === 401) {
+        showMessage("Session expired. Please log in again.", "error");
+        return;
+      }
       if (!res.ok) throw new Error("Failed to send feedback");
 
       addFeedbackToDOM(feedbackData);
 
+      // Reset inputs
       selectedRating = 0;
       updateStars(0);
       commentInput.value = "";
@@ -177,11 +176,11 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(err);
       showMessage("⚠️ Unable to send feedback. Try again later.", "error");
     } finally {
-      hideSpinner(); // always hide spinner after request finishes
+      hideSpinner();
     }
   });
 
-  // === THEME TOGGLE ===
+  // === Theme Toggle ===
   themeToggle?.addEventListener("click", () => {
     document.body.classList.toggle("dark");
     themeToggle.textContent = document.body.classList.contains("dark") ? "🔆" : "🌙";
@@ -194,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --- Logo Redirect ---
-  const logo = document.getElementById("homeLogo");
   if (logo) {
     logo.addEventListener("click", () => {
       window.location.href = "../index.html";
