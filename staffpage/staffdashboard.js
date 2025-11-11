@@ -299,7 +299,7 @@ async function initDashboard() {
   const fullName = (user.name || user.username || user.email?.split("@")[0] || "User")
     .replace(/^\w/, c => c.toUpperCase());
   const welcome = document.getElementById("welcomeMessage");
-  if (welcome) welcome.textContent = `Welcome , ${fullName} `;
+  if (welcome) welcome.textContent = `Welcome  ${fullName} `;
   setupSidebar();
   setupLogout();
   const activeSection = document.querySelector(".content-section.active")?.id;
