@@ -1,4 +1,3 @@
-
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 menuToggle.addEventListener("click", () => {
@@ -6,14 +5,14 @@ menuToggle.addEventListener("click", () => {
   menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
 });
 
- // === THEME TOGGLE ===
-  const themeToggle = document.getElementById("themeToggle");
-  themeToggle?.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    themeToggle.textContent = document.body.classList.contains("dark") ? "🌙" : "🔆";
-  });
-  
-  document.addEventListener("DOMContentLoaded", () => {
+// === THEME TOGGLE ===
+const themeToggle = document.getElementById("themeToggle");
+themeToggle?.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  themeToggle.textContent = document.body.classList.contains("dark") ? "🌙" : "🔆";
+});
+
+document.addEventListener("DOMContentLoaded", () => {
   const logo = document.getElementById("homeLogo");
   if (logo) {
     logo.addEventListener("click", () => {
@@ -317,7 +316,7 @@ const menuItems = [
 ];
 let cart = [];
 
-
+// === MESSAGE HANDLER ===
 function showMessage(msg, type = "info", duration = 4000) {
   let container = document.getElementById("messageContainer");
   if (!container) {
@@ -340,65 +339,85 @@ function showMessage(msg, type = "info", duration = 4000) {
     document.body.appendChild(container);
   }
   container.textContent = msg;
-  container.style.background = type === "error" ? "#dc3545" : type === "success" ? "#28a745" : "#007bff";
+  container.style.background =
+    type === "error" ? "#dc3545" : type === "success" ? "#28a745" : "#007bff";
   container.style.opacity = "1";
   setTimeout(() => (container.style.opacity = "0"), duration);
 }
 
-
+// === DISPLAY MENU ===
 function displayMenu(filter = "all") {
   const grid = document.getElementById("menuGrid");
   if (!grid) return;
-  const filtered = filter === "all" ? menuItems : menuItems.filter(i => i.category === filter);
-  grid.innerHTML = filtered.map(item => `
+  const filtered =
+    filter === "all" ? menuItems : menuItems.filter((i) => i.category === filter);
+  grid.innerHTML = filtered
+    .map(
+      (item) => `
      <div class="menu-item">
       <img src="${item.image}" alt="${item.name}">
       <div class="item-content">
         <h3 class="item-title">${item.name}</h3>
         <p class="item-description">${item.description}</p>
         <div class="item-price">₦${item.price.toLocaleString()}</div>
-        <button class="add-to-cart-btn" onclick="addToCart('${
-          item._id
-        }')">Place Order Now</button>
+        <button class="add-to-cart-btn" onclick="addToCart('${item._id}')">Order Now</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join("");
 }
 window.filterMenu = displayMenu;
 
 // === CART FUNCTIONS ===
 function addToCart(id) {
-  const item = menuItems.find(i => i._id === id);
+  const token = localStorage.getItem("authToken");
+  if (!token) {
+    showMessage("Please sign in to add items to your cart.", "error");
+    return;
+  }
+
+  const item = menuItems.find((i) => i._id === id);
   if (!item) return;
-  const existing = cart.find(c => c._id === id);
+  const existing = cart.find((c) => c._id === id);
   if (existing) existing.quantity++;
   else cart.push({ ...item, quantity: 1 });
   updateCartCount();
   displayCart();
+  showMessage(`${item.name} added to cart ✅`, "success");
 }
+
 function removeFromCart(id) {
-  cart = cart.filter(i => i._id !== id);
+  cart = cart.filter((i) => i._id !== id);
   updateCartCount();
   displayCart();
 }
+
 function updateQuantity(id, change) {
-  const item = cart.find(i => i._id === id);
+  const item = cart.find((i) => i._id === id);
   if (!item) return;
   item.quantity += change;
   if (item.quantity <= 0) removeFromCart(id);
   else displayCart();
 }
+
 function updateCartCount() {
   const el = document.getElementById("cartCount");
   if (!el) return;
   const total = cart.reduce((sum, i) => sum + i.quantity, 0);
   el.textContent = total;
 }
+
 function displayCart() {
   const cartEl = document.getElementById("cartItems");
   if (!cartEl) return;
-  if (!cart.length) { cartEl.innerHTML = "<p>Your cart is empty</p>"; return; }
-  cartEl.innerHTML = cart.map(item => `
+  if (!cart.length) {
+    cartEl.innerHTML = "<p>Your cart is empty</p>";
+    return;
+  }
+  cartEl.innerHTML = cart
+    .map(
+      (item) => `
     <div class="cart-item">
       <div>
         <strong>${item.name}</strong> <br>
@@ -410,16 +429,20 @@ function displayCart() {
         <button onclick="removeFromCart('${item._id}')">🗑️</button>
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join("");
   const total = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
   document.getElementById("totalPrice").textContent = `₦${total.toLocaleString()}`;
 }
 
-
+// === SUBMIT ORDER ===
 async function submitOrder() {
+  const token = localStorage.getItem("authToken");
+  if (!token) return showMessage("Please sign in before placing an order.", "error");
+
   if (!cart.length) return showMessage("🛒 Your cart is empty.", "error");
 
-  // Spinner overlay
   const overlay = document.createElement("div");
   Object.assign(overlay.style, {
     position: "fixed",
@@ -428,7 +451,7 @@ async function submitOrder() {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: "9999"
+    zIndex: "9999",
   });
   overlay.innerHTML = `
     <div style="color:white; text-align:center;">
@@ -450,17 +473,15 @@ async function submitOrder() {
   document.head.appendChild(spinKeyframe);
 
   try {
-    const token = localStorage.getItem("authToken");
     const userId = localStorage.getItem("userId");
     const userData = JSON.parse(localStorage.getItem("userData") || "{}");
     const customerName = userData.username || userData.name || "Anonymous";
 
-    // Build items payload
-    const itemsPayload = cart.map(i => ({
+    const itemsPayload = cart.map((i) => ({
       id: i._id || i.id || null,
       name: i.name,
       quantity: i.quantity,
-      price: i.price
+      price: i.price,
     }));
 
     const totalPrice = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
@@ -471,20 +492,19 @@ async function submitOrder() {
       customerName,
       items: itemsPayload,
       totalPrice,
-      primaryItem
+      primaryItem,
     };
-
-    console.log("📦 Sending order payload:", payload);
 
     const res = await fetch("https://hostify-app-nnod.vercel.app/api/orders/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
+    document.body.removeChild(overlay);
     const text = await res.text();
     let data;
     try {
@@ -492,8 +512,6 @@ async function submitOrder() {
     } catch {
       data = { message: text };
     }
-
-    document.body.removeChild(overlay);
 
     if (!res.ok) {
       console.error("❌ Order failed:", data);
@@ -503,19 +521,16 @@ async function submitOrder() {
       );
     }
 
-    console.log("✅ Order success:", data);
     showMessage("✅ Order placed successfully!", "success");
     cart = [];
     updateCartCount();
     displayCart();
-
   } catch (err) {
     document.body.removeChild(overlay);
     console.error("⚠️ Network or script error:", err);
     showMessage("⚠️ Network error. Please try again.", "error");
   }
 }
-
 
 // === EVENT LISTENERS ===
 document.getElementById("cartIcon").addEventListener("click", () => {
@@ -531,11 +546,9 @@ document.getElementById("proceedBtn").addEventListener("click", () => {
   submitOrder();
 });
 
-
 const style = document.createElement("style");
 style.innerHTML = `@keyframes spin { to { transform: rotate(360deg); } }`;
 document.head.appendChild(style);
-
 
 displayMenu();
 updateCartCount();

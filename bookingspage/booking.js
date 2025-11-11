@@ -5,6 +5,7 @@ menuToggle?.addEventListener("click", () => {
   navLinks.classList.toggle("active");
   menuToggle.textContent = navLinks.classList.contains("active") ? "✕" : "☰";
 });
+
 document.addEventListener("DOMContentLoaded", () => {
   const logo = document.getElementById("homeLogo");
   if (logo) {
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
 const themeToggle = document.getElementById("themeToggle");
 themeToggle?.addEventListener("click", () => {
   document.body.classList.toggle("dark");
@@ -66,10 +68,16 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     console.log("Booking submitted 🧾");
 
-    if (overlay) overlay.style.display = "flex";
+    const token = localStorage.getItem("authToken");
+    const userEmail = localStorage.getItem("userEmail");
 
-    const token = localStorage.getItem("authToken"); 
-    const userEmail = localStorage.getItem("userEmail"); 
+    // 🔒 Check if user is logged in
+    if (!token) {
+      showMessage("⚠️ Please sign in to place a booking.", "error");
+      return;
+    }
+
+    if (overlay) overlay.style.display = "flex";
 
     const payload = {
       customerName: document.getElementById("fullName")?.value.trim(),
@@ -79,11 +87,18 @@ document.addEventListener("DOMContentLoaded", () => {
       time: document.getElementById("time")?.value,
       people: Number(document.getElementById("guests")?.value),
       specialRequests: document.getElementById("specialRequests")?.value.trim(),
-      email: userEmail || `guest${Date.now()}@example.com` 
+      email: userEmail || `guest${Date.now()}@example.com`,
     };
 
     // Validate required fields
-    if (!payload.customerName || !payload.phoneNum || !payload.space || !payload.date || !payload.time || !payload.people) {
+    if (
+      !payload.customerName ||
+      !payload.phoneNum ||
+      !payload.space ||
+      !payload.date ||
+      !payload.time ||
+      !payload.people
+    ) {
       if (overlay) overlay.style.display = "none";
       return showMessage("Please fill in all required fields.", "error");
     }
@@ -93,16 +108,20 @@ document.addEventListener("DOMContentLoaded", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` })
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
       if (overlay) overlay.style.display = "none";
 
       const text = await res.text();
       let data;
-      try { data = JSON.parse(text); } catch { data = { message: text }; }
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { message: text };
+      }
 
       if (!res.ok) {
         console.error("❌ Booking failed:", data);
@@ -112,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("✅ Booking success:", data);
       showMessage("✅ Booking successful! 🎉", "success");
       bookingForm.reset();
-
     } catch (err) {
       if (overlay) overlay.style.display = "none";
       console.error("⚠️ Network error:", err);

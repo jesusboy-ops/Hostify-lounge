@@ -93,7 +93,9 @@ body.dark .navbar {
   box-shadow: 0 0 6px rgba(243, 156, 18, 0.3);
   outline: none;
 }
-
+#homeLogo {
+  height: 130px;
+}
 .nav-links li a {
   color: white;
   text-decoration: none;
@@ -105,6 +107,7 @@ body.dark .navbar {
 .nav-icons {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .nav-links li a:hover {
